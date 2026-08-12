@@ -4,3 +4,4 @@ __pycache__/
 *.egg-info/
 debug/
 sessions/
+.memory-plane/memory.db
