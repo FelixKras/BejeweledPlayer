@@ -31,14 +31,38 @@ def recognize_board(
         for col in range(cols):
             x = round((col + 0.5) * crop.shape[1] / cols)
             y = round((row + 0.5) * crop.shape[0] / rows)
-            radius = max(2, min(crop.shape[0] // rows, crop.shape[1] // cols) // 8)
+            cell_size = min(crop.shape[0] // rows, crop.shape[1] // cols)
+            radius = max(2, cell_size // 8)
             patch = crop[max(0, y - radius):y + radius, max(0, x - radius):x + radius]
             hsv = cv2.cvtColor(patch, cv2.COLOR_BGR2HSV)
             hue, saturation, _ = np.median(hsv.reshape(-1, 3), axis=0)
-            if saturation < 70:
+            histogram_radius = max(radius, cell_size // 3)
+            histogram_patch = crop[
+                max(0, y - histogram_radius):y + histogram_radius,
+                max(0, x - histogram_radius):x + histogram_radius,
+            ]
+            histogram_hsv = cv2.cvtColor(histogram_patch, cv2.COLOR_BGR2HSV)
+            saturated_hues = histogram_hsv[:, :, 0][histogram_hsv[:, :, 1] >= 90]
+            histogram = np.histogram(saturated_hues, bins=18, range=(0, 180))[0]
+            hue_families = (
+                int(np.sum(histogram[0:5])),
+                int(np.sum(histogram[5:9])),
+                int(np.sum(histogram[9:13])),
+                int(np.sum(histogram[13:18])),
+            )
+            multicolor = sum(count >= max(50, saturated_hues.size * 0.12) for count in hue_families) >= 2
+            histogram_saturation = float(np.median(histogram_hsv[:, :, 1]))
+            histogram_value = float(np.median(histogram_hsv[:, :, 2]))
+            if (
+                40 <= hue < 85
+                and saturation >= 70
+                and (histogram_saturation < 210 or histogram_value < 215)
+            ):
+                label = 8  # shining row-and-column special
+            elif saturation >= 70 and multicolor:
+                label = 7  # rotating multicolor gem
+            elif saturation < 70:
                 label = 6  # white
-            elif np.std(hsv[:, :, 0]) > 25:
-                label = 7  # multicolor special; unsupported by the immediate planner
             elif hue < 8 or hue >= 170:
                 label = 0  # red
             elif hue < 22:
@@ -95,6 +119,27 @@ def find_best_move(board: np.ndarray) -> Move | None:
                 if score >= 3 and value > best_value:
                     best = Move((row, col), other, score)
                     best_value = value
+    return best
+
+
+def find_rotating_gem_move(board: np.ndarray) -> Move | None:
+    """Activate a multicolor gem against the most frequent adjacent color."""
+    counts = np.bincount(board[board < 7], minlength=7)
+    best: Move | None = None
+    best_count = -1
+    rows, cols = board.shape
+    for row, col in np.argwhere(board == 7):
+        for dr, dc in ((-1, 0), (0, -1), (0, 1), (1, 0)):
+            other = (int(row + dr), int(col + dc))
+            if not (0 <= other[0] < rows and 0 <= other[1] < cols):
+                continue
+            color = int(board[other])
+            if color >= 7:
+                continue
+            count = int(counts[color])
+            if count > best_count:
+                best = Move((int(row), int(col)), other, count)
+                best_count = count
     return best
 
 

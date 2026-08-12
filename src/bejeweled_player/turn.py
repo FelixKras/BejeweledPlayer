@@ -11,12 +11,12 @@ import numpy as np
 
 from .adb import AdbActionSink, AdbFrameSource
 from .board import Move as ScoredMove
-from .board import find_best_move, recognize_board
+from .board import find_best_move, find_rotating_gem_move, recognize_board
 from .config import AppConfig
 from .domain import Coordinate, Frame, Move
 from .vision import render_grid_overlay
 
-GEM_SYMBOLS = ("R", "G", "B", "Y", "P", "O", "W", "S")
+GEM_SYMBOLS = ("R", "G", "B", "Y", "P", "O", "W", "C", "X")
 
 
 def board_text(board: np.ndarray) -> str:
@@ -53,7 +53,7 @@ def decide_turn(png: bytes, config: AppConfig) -> tuple[np.ndarray, ScoredMove |
             f"board appearance validation failed: {non_white}/64 colored cells, "
             f"{unique_gems} gem classes"
         )
-    return board, find_best_move(board)
+    return board, find_best_move(board) or find_rotating_gem_move(board)
 
 
 def run_turn(
@@ -71,11 +71,20 @@ def run_turn(
         config.capture_retries,
     )
     before = source.capture()
+    board, selected = decide_turn(before.png, config)
+    for _ in range(7):
+        if selected is not None:
+            break
+        time.sleep(poll_seconds)
+        candidate = source.capture()
+        candidate_board, candidate_move = decide_turn(candidate.png, config)
+        if candidate_move is not None:
+            before, board, selected = candidate, candidate_board, candidate_move
+
     session = output_root / datetime.now(UTC).strftime("turn-%Y%m%dT%H%M%S.%fZ")
     session.mkdir(parents=True, exist_ok=False)
     (session / "before.png").write_bytes(before.png)
     render_grid_overlay(before.png, config.geometry, session / "before.overlay.png")
-    board, selected = decide_turn(before.png, config)
     action_id = None
 
     if selected is not None and execute:

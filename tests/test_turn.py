@@ -40,6 +40,21 @@ def test_recognizer_and_immediate_decision_on_synthetic_board() -> None:
     assert {move.start, move.end} == {(0, 1), (1, 1)}
 
 
+def test_recognizer_uses_separated_hue_histogram_for_rotating_gem() -> None:
+    image = np.full((100, 100, 3), COLORS[3], dtype=np.uint8)
+    image[:, :50] = COLORS[0]
+    image[:, 50:] = COLORS[2]
+    recognized = recognize_board(image, (0, 0, 100, 100), 1, 1, 7)
+    assert recognized[0, 0] == 7
+
+
+def test_recognizer_distinguishes_dim_shining_green_special() -> None:
+    hsv = np.full((100, 100, 3), (60, 200, 200), dtype=np.uint8)
+    image = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
+    recognized = recognize_board(image, (0, 0, 100, 100), 1, 1, 7)
+    assert recognized[0, 0] == 8
+
+
 def test_turn_rejects_unrelated_low_color_screen() -> None:
     success, png = cv2.imencode(".png", np.full((1536, 720, 3), 240, dtype=np.uint8))
     assert success
