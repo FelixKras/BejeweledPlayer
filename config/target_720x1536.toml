@@ -1,0 +1,41 @@
+schema_version = 1
+
+[device]
+serial = "192.168.41.98:42479"
+
+[capture]
+width = 720
+height = 1536
+timeout_seconds = 15.0
+retries = 1
+
+[geometry]
+rows = 8
+columns = 8
+left = 0
+top = 320
+right = 720
+bottom = 1005
+
+[recognition]
+profile = "target_720x1536-v1-untrained"
+
+[rules]
+rule_set = "initial-v1-assumptions-unresolved"
+
+[planner]
+random_seed = 20260811
+budget_seconds = 1.5
+
+[action]
+swipe_duration_ms = 120
+
+[logging]
+frame_retention = "errors"
+
+[ui_detection]
+progress_left = 20
+progress_top = 1015
+progress_right = 700
+progress_bottom = 1065
+progress_full_threshold = 0.95
