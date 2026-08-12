@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 import tomllib
+from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Mapping
+from typing import Any
 
 from .interfaces import BoardGeometry
-
 
 _ROOT_KEYS = {
     "schema_version",
@@ -44,7 +44,7 @@ class AppConfig:
 def _section(data: Mapping[str, Any], name: str, allowed: set[str]) -> Mapping[str, Any]:
     value = data.get(name)
     if not isinstance(value, dict):
-        raise ValueError(f"[{name}] section is required")
+        raise TypeError(f"[{name}] section is required")
     unknown = set(value) - allowed
     if unknown:
         raise ValueError(f"unknown [{name}] keys: {', '.join(sorted(unknown))}")
@@ -86,7 +86,12 @@ def load_config(path: Path) -> AppConfig:
         planning_budget_seconds=float(planner["budget_seconds"]),
         swipe_duration_ms=int(action["swipe_duration_ms"]),
         frame_retention=str(logging["frame_retention"]),
-        progress_region=tuple(int(ui[key]) for key in ("progress_left", "progress_top", "progress_right", "progress_bottom")),
+        progress_region=(
+            int(ui["progress_left"]),
+            int(ui["progress_top"]),
+            int(ui["progress_right"]),
+            int(ui["progress_bottom"]),
+        ),
         progress_full_threshold=float(ui["progress_full_threshold"]),
     )
     _validate(result)

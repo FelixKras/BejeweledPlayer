@@ -5,7 +5,6 @@ from dataclasses import dataclass
 import cv2
 import numpy as np
 
-
 Cell = tuple[int, int]
 
 

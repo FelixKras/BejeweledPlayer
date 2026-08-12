@@ -7,7 +7,6 @@ from bejeweled_player.config import AppConfig
 from bejeweled_player.interfaces import BoardGeometry
 from bejeweled_player.turn import decide_turn
 
-
 COLORS = {
     0: (0, 0, 255),
     1: (0, 255, 0),

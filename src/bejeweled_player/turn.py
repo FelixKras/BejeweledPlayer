@@ -11,11 +11,10 @@ import numpy as np
 
 from .adb import AdbActionSink, AdbFrameSource
 from .board import Move as ScoredMove
-from .board import find_best_move, matched_cells, recognize_board
+from .board import find_best_move, recognize_board
 from .config import AppConfig
-from .domain import Coordinate, Move
+from .domain import Coordinate, Frame, Move
 from .vision import render_grid_overlay
-
 
 GEM_SYMBOLS = ("R", "G", "B", "Y", "P", "O", "W", "S")
 
@@ -114,7 +113,7 @@ def _capture_settled(
     minimum_wait: float,
     timeout: float,
     poll_seconds: float,
-):
+) -> Frame:
     time.sleep(minimum_wait)
     deadline = time.monotonic() + timeout
     previous: np.ndarray | None = None

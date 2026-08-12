@@ -5,7 +5,6 @@ import pytest
 from bejeweled_player.config import load_config
 from bejeweled_player.domain import Coordinate
 
-
 PROFILE = Path(__file__).parents[1] / "config" / "target_720x1536.toml"
 PIXEL_PROFILE = Path(__file__).parents[1] / "config" / "pixel9pro_960x2142.toml"
 

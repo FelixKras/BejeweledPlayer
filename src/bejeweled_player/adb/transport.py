@@ -4,8 +4,8 @@ import shutil
 import subprocess
 import time
 import uuid
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
-from typing import Callable, Sequence
 
 import cv2
 import numpy as np
