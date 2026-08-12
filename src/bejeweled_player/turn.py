@@ -152,10 +152,9 @@ def _boards_equivalent_for_settlement(previous: np.ndarray, current: np.ndarray)
     if difference_count == 0:
         return True
     special_or_unknown = (previous >= 7) | (current >= 7)
-    if int(np.count_nonzero(differing & ~special_or_unknown)) == 0:
-        return True
-    # Animated effects can perturb one ordinary sampled cell without changing playability.
-    return difference_count <= 1
+    ordinary_difference_count = int(np.count_nonzero(differing & ~special_or_unknown))
+    # Hint and special-gem effects can perturb a small cluster without moving the board.
+    return ordinary_difference_count <= 4
 
 
 def run_multi_turn(

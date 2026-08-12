@@ -35,7 +35,7 @@ frame_retention = "errors"
 
 [ui_detection]
 progress_left = 20
-progress_top = 1420
+progress_top = 1320
 progress_right = 940
-progress_bottom = 1480
+progress_bottom = 1380
 progress_full_threshold = 0.80
