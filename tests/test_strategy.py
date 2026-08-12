@@ -1,5 +1,7 @@
 import numpy as np
+import pytest
 
+from bejeweled_player import board as board_module
 from bejeweled_player.board import find_best_move, find_rotating_gem_move, matched_cells
 
 
@@ -20,6 +22,31 @@ def test_strategy_prefers_five_match_over_three_match() -> None:
         ]
     )
     move = find_best_move(board)
+    assert move is not None
+    assert move.score >= 4
+
+
+def test_match_size_cannot_be_outweighed_by_secondary_strategy(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    board = np.array(
+        [
+            [4, 5, 1, 2, 2, 1],
+            [3, 2, 3, 1, 3, 2],
+            [0, 4, 1, 5, 4, 3],
+            [1, 4, 3, 5, 0, 3],
+            [1, 0, 4, 3, 4, 0],
+            [0, 4, 1, 5, 2, 2],
+        ]
+    )
+    monkeypatch.setattr(
+        board_module,
+        "strategic_value",
+        lambda _board, score, _bias: 1_000_000 if score == 3 else 0,
+    )
+
+    move = find_best_move(board)
+
     assert move is not None
     assert move.score >= 4
 

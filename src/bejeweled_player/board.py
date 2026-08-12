@@ -36,7 +36,9 @@ def recognize_board(
             patch = crop[max(0, y - radius):y + radius, max(0, x - radius):x + radius]
             hsv = cv2.cvtColor(patch, cv2.COLOR_BGR2HSV)
             hue, saturation, _ = np.median(hsv.reshape(-1, 3), axis=0)
-            histogram_radius = max(radius, cell_size // 3)
+            # Keep special-gem color sampling inside the gem body; cell edges include
+            # board artwork and animated glows that can look falsely multicolored.
+            histogram_radius = max(radius, cell_size // 4)
             histogram_patch = crop[
                 max(0, y - histogram_radius):y + histogram_radius,
                 max(0, x - histogram_radius):x + histogram_radius,
@@ -56,7 +58,8 @@ def recognize_board(
             if (
                 40 <= hue < 85
                 and saturation >= 70
-                and (histogram_saturation < 210 or histogram_value < 215)
+                and histogram_saturation < 170
+                and histogram_value < 190
             ):
                 label = 8  # shining row-and-column special
             elif saturation >= 70 and multicolor:
@@ -103,7 +106,7 @@ def find_best_move(board: np.ndarray) -> Move | None:
     rows, cols = board.shape
     baseline = matched_cells(board)
     best: Move | None = None
-    best_value = -1
+    best_priority = (-1, -1)
     for row in range(rows):
         for col in range(cols):
             for dr, dc in ((0, 1), (1, 0)):
@@ -115,10 +118,10 @@ def find_best_move(board: np.ndarray) -> Move | None:
                 candidate = board.copy()
                 candidate[row, col], candidate[other] = candidate[other], candidate[row, col]
                 score = len(matched_cells(candidate) - baseline)
-                value = strategic_value(candidate, score, rows - row)
-                if score >= 3 and value > best_value:
+                priority = (score, strategic_value(candidate, score, rows - row))
+                if score >= 3 and priority > best_priority:
                     best = Move((row, col), other, score)
-                    best_value = value
+                    best_priority = priority
     return best
 
 

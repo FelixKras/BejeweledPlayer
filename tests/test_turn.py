@@ -48,11 +48,25 @@ def test_recognizer_uses_separated_hue_histogram_for_rotating_gem() -> None:
     assert recognized[0, 0] == 7
 
 
+def test_recognizer_ignores_multicolor_cell_edges() -> None:
+    image = np.full((120, 120, 3), COLORS[0], dtype=np.uint8)
+    image[30:90, 30:90] = COLORS[3]
+    recognized = recognize_board(image, (0, 0, 120, 120), 1, 1, 7)
+    assert recognized[0, 0] == 3
+
+
 def test_recognizer_distinguishes_dim_shining_green_special() -> None:
-    hsv = np.full((100, 100, 3), (60, 200, 200), dtype=np.uint8)
+    hsv = np.full((100, 100, 3), (60, 140, 170), dtype=np.uint8)
     image = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
     recognized = recognize_board(image, (0, 0, 100, 100), 1, 1, 7)
     assert recognized[0, 0] == 8
+
+
+def test_recognizer_keeps_rendered_green_as_ordinary() -> None:
+    hsv = np.full((100, 100, 3), (60, 200, 200), dtype=np.uint8)
+    image = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
+    recognized = recognize_board(image, (0, 0, 100, 100), 1, 1, 7)
+    assert recognized[0, 0] == 1
 
 
 def test_turn_rejects_unrelated_low_color_screen() -> None:
