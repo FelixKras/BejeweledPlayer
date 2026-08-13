@@ -1,6 +1,23 @@
 import numpy as np
 
-from bejeweled_player.turn import _boards_equivalent_for_settlement
+from bejeweled_player.turn import _board_changed_after_move, _boards_equivalent_for_settlement
+
+
+def test_move_change_rejects_unchanged_board() -> None:
+    board = np.array([[1, 2], [3, 4]])
+    assert not _board_changed_after_move(board, board.copy())
+
+
+def test_move_change_rejects_single_cell_flicker() -> None:
+    before = np.array([[1, 2], [3, 4]])
+    current = np.array([[1, 5], [3, 4]])
+    assert not _board_changed_after_move(before, current)
+
+
+def test_move_change_accepts_two_ordinary_changes() -> None:
+    before = np.array([[1, 2], [3, 4]])
+    current = np.array([[2, 1], [3, 4]])
+    assert _board_changed_after_move(before, current)
 
 
 def test_settlement_allows_exact_board_match() -> None:

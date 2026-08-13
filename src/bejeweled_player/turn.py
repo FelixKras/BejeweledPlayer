@@ -10,13 +10,13 @@ import cv2
 import numpy as np
 
 from .adb import AdbActionSink, AdbFrameSource
+from .board import UNKNOWN_GEM, find_best_move, find_rotating_gem_move, recognize_board
 from .board import Move as ScoredMove
-from .board import find_best_move, find_rotating_gem_move, recognize_board
 from .config import AppConfig
 from .domain import Coordinate, Frame, Move
 from .vision import render_grid_overlay
 
-GEM_SYMBOLS = ("R", "G", "B", "Y", "P", "O", "W", "C", "X")
+GEM_SYMBOLS = ("R", "G", "B", "Y", "P", "O", "W", "C", "X", "?")
 
 
 def board_text(board: np.ndarray) -> str:
@@ -48,6 +48,9 @@ def decide_turn(png: bytes, config: AppConfig) -> tuple[np.ndarray, ScoredMove |
     )
     non_white = int(np.count_nonzero(board != 6))
     unique_gems = len(np.unique(board))
+    unknown_count = int(np.count_nonzero(board == UNKNOWN_GEM))
+    if unknown_count:
+        raise ValueError(f"board recognition uncertain: {unknown_count}/64 unknown cells")
     if non_white < board.size // 2 or unique_gems < 5:
         raise ValueError(
             f"board appearance validation failed: {non_white}/64 colored cells, "
@@ -97,6 +100,7 @@ def run_turn(
         after = _capture_settled(
             source,
             config,
+            board,
             settle_seconds,
             settle_timeout_seconds,
             poll_seconds,
@@ -119,6 +123,7 @@ def run_turn(
 def _capture_settled(
     source: AdbFrameSource,
     config: AppConfig,
+    before_board: np.ndarray,
     minimum_wait: float,
     timeout: float,
     poll_seconds: float,
@@ -128,6 +133,7 @@ def _capture_settled(
     previous: np.ndarray | None = None
     last_error: ValueError | None = None
     transition_started = False
+    board_changed = False
     while time.monotonic() < deadline:
         frame = source.capture()
         progress = progress_fraction(frame.png, config)
@@ -146,11 +152,22 @@ def _capture_settled(
             last_error = error
             time.sleep(poll_seconds)
             continue
-        if previous is not None and _boards_equivalent_for_settlement(previous, board):
+        board_changed = board_changed or _board_changed_after_move(before_board, board)
+        if board_changed and previous is not None and _boards_equivalent_for_settlement(previous, board):
             return frame
         previous = board
         time.sleep(poll_seconds)
     raise RuntimeError(f"board did not settle within {timeout:g}s: {last_error or 'changed'}")
+
+
+def _board_changed_after_move(before: np.ndarray, current: np.ndarray) -> bool:
+    if before.shape != current.shape:
+        return True
+    differing = before != current
+    ordinary = (before < 7) & (current < 7)
+    # A successful adjacent swap changes at least two ordinary cells. A single
+    # difference can be an animated hint or recognition flicker.
+    return int(np.count_nonzero(differing & ordinary)) >= 2
 
 
 def _boards_equivalent_for_settlement(previous: np.ndarray, current: np.ndarray) -> bool:

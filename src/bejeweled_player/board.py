@@ -6,6 +6,16 @@ import cv2
 import numpy as np
 
 Cell = tuple[int, int]
+UNKNOWN_GEM = 9
+
+_HUE_TEMPLATE_BINS = {
+    0: (0, 17),
+    1: (4, 5, 6, 7, 8),
+    2: (9, 10, 11, 12),
+    3: (2, 3),
+    4: (13, 14, 15, 16),
+    5: (1, 2),
+}
 
 
 @dataclass(frozen=True)
@@ -66,20 +76,31 @@ def recognize_board(
                 label = 7  # rotating multicolor gem
             elif saturation < 70:
                 label = 6  # white
-            elif hue < 8 or hue >= 170:
-                label = 0  # red
-            elif hue < 22:
-                label = 5  # orange
-            elif hue < 40:
-                label = 3  # yellow
-            elif hue < 85:
-                label = 1  # green
-            elif hue < 130:
-                label = 2  # blue
             else:
-                label = 4  # purple
+                label = classify_hue_histogram(histogram)
             labels.append(label)
     return np.asarray(labels, dtype=np.int8).reshape(rows, cols)
+
+
+def classify_hue_histogram(histogram: np.ndarray) -> int:
+    """Classify an ordinary gem by correlation with hue-family templates."""
+    observed = histogram.astype(np.float32)
+    if float(np.sum(observed)) == 0:
+        return UNKNOWN_GEM
+    observed /= float(np.sum(observed))
+    scores: list[tuple[float, int]] = []
+    for label, bins in _HUE_TEMPLATE_BINS.items():
+        template = np.zeros(18, dtype=np.float32)
+        template[list(bins)] = 1.0 / len(bins)
+        score = float(cv2.compareHist(observed, template, cv2.HISTCMP_CORREL))
+        scores.append((score, label))
+    scores.sort(reverse=True)
+    best_score, best_label = scores[0]
+    margin = best_score - scores[1][0]
+    dominant_mass = float(np.sum(observed[list(_HUE_TEMPLATE_BINS[best_label])]))
+    if best_score < 0.35 or margin < 0.08 or dominant_mass < 0.55:
+        return UNKNOWN_GEM
+    return best_label
 
 
 def matched_cells(board: np.ndarray) -> set[Cell]:

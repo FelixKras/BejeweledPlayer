@@ -2,7 +2,12 @@ import cv2
 import numpy as np
 import pytest
 
-from bejeweled_player.board import find_best_move, recognize_board
+from bejeweled_player.board import (
+    UNKNOWN_GEM,
+    classify_hue_histogram,
+    find_best_move,
+    recognize_board,
+)
 from bejeweled_player.config import AppConfig
 from bejeweled_player.interfaces import BoardGeometry
 from bejeweled_player.turn import decide_turn
@@ -53,6 +58,13 @@ def test_recognizer_ignores_multicolor_cell_edges() -> None:
     image[30:90, 30:90] = COLORS[3]
     recognized = recognize_board(image, (0, 0, 120, 120), 1, 1, 7)
     assert recognized[0, 0] == 3
+
+
+def test_histogram_template_rejects_ambiguous_color() -> None:
+    histogram = np.zeros(18, dtype=np.int64)
+    histogram[3] = 100
+    histogram[6] = 100
+    assert classify_hue_histogram(histogram) == UNKNOWN_GEM
 
 
 def test_recognizer_distinguishes_dim_shining_green_special() -> None:
