@@ -62,7 +62,11 @@ def recognize_board(
                 int(np.sum(histogram[9:13])),
                 int(np.sum(histogram[13:18])),
             )
-            multicolor = sum(count >= max(50, saturated_hues.size * 0.12) for count in hue_families) >= 2
+            sorted_families = sorted(hue_families, reverse=True)
+            second_family_ratio = sorted_families[1] / max(1, sorted_families[0])
+            # Confirmed rotation phases span all four dominant families, but each
+            # retains at least half as much mass in a second broad hue family.
+            hypercube = second_family_ratio >= 0.50
             histogram_saturation = float(np.median(histogram_hsv[:, :, 1]))
             histogram_value = float(np.median(histogram_hsv[:, :, 2]))
             if (
@@ -72,8 +76,8 @@ def recognize_board(
                 and histogram_value < 190
             ):
                 label = 8  # shining row-and-column special
-            elif saturation >= 70 and multicolor:
-                label = 7  # rotating multicolor gem
+            elif saturation >= 70 and hypercube:
+                label = 7  # hypercube
             elif saturation < 70:
                 label = 6  # white
             else:
@@ -146,8 +150,8 @@ def find_best_move(board: np.ndarray) -> Move | None:
     return best
 
 
-def find_rotating_gem_move(board: np.ndarray) -> Move | None:
-    """Activate a multicolor gem against the most frequent adjacent color."""
+def find_hypercube_move(board: np.ndarray) -> Move | None:
+    """Activate a hypercube against the most frequent adjacent color."""
     counts = np.bincount(board[board < 7], minlength=7)
     best: Move | None = None
     best_count = -1

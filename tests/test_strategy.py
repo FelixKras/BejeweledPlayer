@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 
 from bejeweled_player import board as board_module
-from bejeweled_player.board import find_best_move, find_rotating_gem_move, matched_cells
+from bejeweled_player.board import find_best_move, find_hypercube_move, matched_cells
 
 
 def test_special_cells_do_not_count_as_ordinary_matches() -> None:
@@ -51,7 +51,7 @@ def test_match_size_cannot_be_outweighed_by_secondary_strategy(
     assert move.score >= 4
 
 
-def test_rotating_gem_targets_adjacent_globally_most_frequent_color() -> None:
+def test_hypercube_targets_adjacent_globally_most_frequent_color() -> None:
     board = np.array(
         [
             [2, 2, 2, 2],
@@ -60,7 +60,7 @@ def test_rotating_gem_targets_adjacent_globally_most_frequent_color() -> None:
             [0, 1, 4, 5],
         ]
     )
-    move = find_rotating_gem_move(board)
+    move = find_hypercube_move(board)
     assert move is not None
     assert move.start == (1, 1)
     assert move.end == (0, 1)
@@ -68,13 +68,13 @@ def test_rotating_gem_targets_adjacent_globally_most_frequent_color() -> None:
     assert move.score == 5
 
 
-def test_rotating_gem_fallback_is_deterministic_on_frequency_tie() -> None:
+def test_hypercube_fallback_is_deterministic_on_frequency_tie() -> None:
     board = np.array([[0, 1, 2], [3, 7, 4], [5, 6, 0]])
-    move = find_rotating_gem_move(board)
+    move = find_hypercube_move(board)
     assert move is not None
     assert move.start == (1, 1)
     assert move.end == (0, 1)
 
 
-def test_rotating_gem_fallback_requires_an_ordinary_neighbor() -> None:
-    assert find_rotating_gem_move(np.full((2, 2), 7)) is None
+def test_hypercube_fallback_requires_an_ordinary_neighbor() -> None:
+    assert find_hypercube_move(np.full((2, 2), 7)) is None

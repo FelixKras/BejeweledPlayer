@@ -5,3 +5,10 @@
 {"actor": "Forge", "event": "proposed", "id": "mp-20260813-c24d0b2ad0", "path": ".memory-plane/proposals/require-observed-board-change-after-every-swipe-0b2ad0.md", "ts": "2026-08-13T03:32:27.029480Z"}
 {"actor": "Forge", "event": "proposed", "id": "mp-20260813-55c350df14", "path": ".memory-plane/proposals/classify-ordinary-gems-by-hue-template-correlation-50df14.md", "ts": "2026-08-13T04:14:53.598656Z"}
 {"actor": "Forge", "event": "proposed", "id": "mp-20260813-cb44840059", "path": ".memory-plane/proposals/correlation-classifier-live-trial-stopped-safely-840059.md", "ts": "2026-08-13T04:27:55.747377Z"}
+{"actor": "Forge", "event": "proposed", "id": "mp-20260813-a7bcb8ff26", "path": ".memory-plane/proposals/two-hue-families-do-not-identify-rotating-gems-b8ff26.md", "ts": "2026-08-13T04:34:43.003581Z"}
+{"actor": "Forge", "event": "proposed", "id": "mp-20260813-bf78aecfe8", "path": ".memory-plane/proposals/created-provisional-20-board-vision-label-set-aecfe8.md", "ts": "2026-08-13T05:20:51.508723Z"}
+{"actor": "Forge", "event": "proposed", "id": "mp-20260813-1f70d56563", "path": ".memory-plane/proposals/vision-verified-ten-ordinary-gem-boards-d56563.md", "ts": "2026-08-13T05:42:43.705130Z"}
+{"actor": "Forge", "event": "proposed", "id": "mp-20260813-3f1019c006", "path": ".memory-plane/proposals/level-3-special-board-separates-identity-from-flame-effect-19c006.md", "ts": "2026-08-13T06:09:23.188012Z"}
+{"actor": "Forge", "event": "proposed", "id": "mp-20260813-4186055776", "path": ".memory-plane/proposals/multicolored-special-gem-is-named-hypercube-055776.md", "ts": "2026-08-13T06:12:33.022708Z"}
+{"actor": "Forge", "event": "proposed", "id": "mp-20260813-138febe1e0", "path": ".memory-plane/proposals/detect-hypercube-by-warm-secondary-hue-family-ratio-ebe1e0.md", "ts": "2026-08-13T06:56:43.927412Z"}
+{"actor": "Forge", "event": "proposed", "id": "mp-20260813-c0c3a010d8", "path": ".memory-plane/proposals/hypercube-ratio-threshold-validated-across-four-rotation-phases-a010d8.md", "ts": "2026-08-13T09:23:43.938080Z"}

@@ -1,0 +1,27 @@
+{
+  "source": "Telegram message 23705",
+  "image": "special-gems-level3.jpg",
+  "geometry": [0, 270, 574, 846],
+  "coordinates": "one-based row,column",
+  "identities": [
+    ["red", "red", "yellow", "white", "white", "yellow", "purple", "green"],
+    ["red", "green", "blue", "white", "blue", "red", "blue", "yellow"],
+    ["orange", "orange", "yellow", "green", "purple", "blue", "blue", "green"],
+    ["white", "purple", "yellow", "blue", "red", "purple", "orange", "green"],
+    ["red", "green", "blue", "white", "green", "purple", "red", "yellow"],
+    ["green", "blue", "green", "white", "yellow", "red", "hypercube", "white"],
+    ["blue", "blue", "red", "orange", "white", "red", "blue", "orange"],
+    ["yellow", "white", "purple", "red", "purple", "yellow", "yellow", "green"]
+  ],
+  "effects": {
+    "r2c6": "flame",
+    "r4c1": "flame",
+    "r6c7": "hypercube",
+    "r8c4": "flame"
+  },
+  "review": {
+    "reviewer": "Forge visual model",
+    "confidence": 0.99,
+    "notes": "Flame is an effect on the underlying red/white identity; the distinct multicolored game piece is a hypercube."
+  }
+}

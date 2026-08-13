@@ -10,7 +10,7 @@ import cv2
 import numpy as np
 
 from .adb import AdbActionSink, AdbFrameSource
-from .board import UNKNOWN_GEM, find_best_move, find_rotating_gem_move, recognize_board
+from .board import UNKNOWN_GEM, find_best_move, find_hypercube_move, recognize_board
 from .board import Move as ScoredMove
 from .config import AppConfig
 from .domain import Coordinate, Frame, Move
@@ -56,7 +56,7 @@ def decide_turn(png: bytes, config: AppConfig) -> tuple[np.ndarray, ScoredMove |
             f"board appearance validation failed: {non_white}/64 colored cells, "
             f"{unique_gems} gem classes"
         )
-    return board, find_best_move(board) or find_rotating_gem_move(board)
+    return board, find_best_move(board) or find_hypercube_move(board)
 
 
 def run_turn(
