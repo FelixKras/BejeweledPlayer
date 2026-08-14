@@ -64,6 +64,8 @@ def recognize_board(
             )
             sorted_families = sorted(hue_families, reverse=True)
             second_family_ratio = sorted_families[1] / max(1, sorted_families[0])
+            saturated_fraction = saturated_hues.size / histogram_hsv[:, :, 0].size
+            significant_hue_bins = int(np.count_nonzero(histogram > np.sum(histogram) * 0.05))
             # Confirmed rotation phases span all four dominant families, but each
             # retains at least half as much mass in a second broad hue family.
             hypercube = second_family_ratio >= 0.50
@@ -76,12 +78,18 @@ def recognize_board(
                 and histogram_value < 190
             ):
                 label = 8  # shining row-and-column special
-            elif saturation >= 70 and hypercube:
+            elif saturation >= 70 and hypercube and (
+                saturated_fraction < 0.85 or significant_hue_bins <= 2
+            ):
                 label = 7  # hypercube
             elif saturation < 70:
                 label = 6  # white
             else:
                 label = classify_hue_histogram(histogram)
+                if label == UNKNOWN_GEM:
+                    label = classify_unknown_gem(histogram_patch)
+                if label == UNKNOWN_GEM:
+                    label = classify_hue(float(hue))
             labels.append(label)
     return np.asarray(labels, dtype=np.int8).reshape(rows, cols)
 
@@ -105,6 +113,65 @@ def classify_hue_histogram(histogram: np.ndarray) -> int:
     if best_score < 0.35 or margin < 0.08 or dominant_mass < 0.55:
         return UNKNOWN_GEM
     return best_label
+
+
+def classify_unknown_gem(patch: np.ndarray) -> int:
+    """Resolve an uncertain ordinary gem by combining independent color evidence."""
+    hsv = cv2.cvtColor(patch, cv2.COLOR_BGR2HSV)
+    height, width = hsv.shape[:2]
+    yy, xx = np.ogrid[:height, :width]
+    distance = ((xx - (width - 1) / 2) / max(1, width / 2)) ** 2 + (
+        (yy - (height - 1) / 2) / max(1, height / 2)
+    ) ** 2
+    regions = (distance <= 1.0, distance <= 0.55, distance <= 0.22)
+    scores = np.zeros(7, dtype=np.float32)
+
+    for weight, region in zip((0.20, 0.30, 0.35), regions, strict=True):
+        pixels = hsv[region]
+        saturated = pixels[pixels[:, 1] >= 70]
+        if saturated.size == 0:
+            continue
+        histogram = np.histogram(
+            saturated[:, 0], bins=18, range=(0, 180), weights=saturated[:, 1]
+        )[0].astype(np.float32)
+        histogram /= max(1.0, float(np.sum(histogram)))
+        for label, bins in _HUE_TEMPLATE_BINS.items():
+            scores[label] += weight * float(np.sum(histogram[list(bins)]))
+
+    # Bright effect pixels are usually desaturated; weighting by saturation lets
+    # surviving gem-colored pixels outvote white hint and flame overlays.
+    saturated = hsv[:, :, 1] >= 70
+    if np.any(saturated):
+        hues = hsv[:, :, 0][saturated]
+        weights = hsv[:, :, 1][saturated].astype(np.float32)
+        total_weight = float(np.sum(weights))
+        for label, bins in _HUE_TEMPLATE_BINS.items():
+            bin_index = np.minimum(hues // 10, 17)
+            scores[label] += 0.15 * float(np.sum(weights[np.isin(bin_index, bins)])) / total_weight
+
+    # White has no meaningful hue, so score it from neutral bright pixels separately.
+    neutral_bright = (hsv[:, :, 1] < 70) & (hsv[:, :, 2] >= 120)
+    scores[6] = float(np.count_nonzero(neutral_bright)) / neutral_bright.size
+
+    ranking = np.argsort(scores)[::-1]
+    best, second = int(ranking[0]), int(ranking[1])
+    if scores[best] < 0.42 or scores[best] - scores[second] < 0.12:
+        return UNKNOWN_GEM
+    return best
+
+
+def classify_hue(hue: float) -> int:
+    if hue < 4 or hue >= 170:
+        return 0
+    if hue < 20:
+        return 5
+    if hue < 40:
+        return 3
+    if hue < 85:
+        return 1
+    if hue < 130:
+        return 2
+    return 4
 
 
 def matched_cells(board: np.ndarray) -> set[Cell]:

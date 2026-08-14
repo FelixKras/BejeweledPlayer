@@ -44,6 +44,13 @@ def test_settlement_allows_hint_and_special_flicker_together() -> None:
 
 
 def test_settlement_rejects_broad_ordinary_changes() -> None:
-    previous = np.array([[1, 2, 3], [4, 5, 6]])
-    current = np.array([[0, 1, 2], [3, 4, 6]])
+    previous = np.arange(16).reshape(4, 4) % 7
+    current = (previous + 1) % 7
     assert not _boards_equivalent_for_settlement(previous, current)
+
+
+def test_settlement_allows_eight_animated_cells() -> None:
+    previous = np.arange(16).reshape(4, 4) % 7
+    current = previous.copy()
+    current.flat[:8] = (current.flat[:8] + 1) % 7
+    assert _boards_equivalent_for_settlement(previous, current)

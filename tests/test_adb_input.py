@@ -38,3 +38,17 @@ def test_action_sink_builds_one_calibrated_swipe_command() -> None:
             5,
         )
     ]
+
+
+def test_action_sink_builds_tap_command() -> None:
+    commands = []
+
+    def runner(command, timeout):
+        commands.append((command, timeout))
+        return subprocess.CompletedProcess(command, 0, b"", b"")
+
+    sink = AdbActionSink("phone:1234", 120, 5, runner=runner, executable="adb")
+    assert sink.tap((480, 1680))
+    assert commands == [
+        (["adb", "-s", "phone:1234", "shell", "input", "tap", "480", "1680"], 5)
+    ]

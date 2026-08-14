@@ -8,12 +8,13 @@ import pytest
 from bejeweled_player.board import (
     UNKNOWN_GEM,
     classify_hue_histogram,
+    classify_unknown_gem,
     find_best_move,
     recognize_board,
 )
 from bejeweled_player.config import AppConfig
 from bejeweled_player.interfaces import BoardGeometry
-from bejeweled_player.turn import decide_turn
+from bejeweled_player.turn import _recognize_frame, continue_button, decide_turn
 
 COLORS = {
     0: (0, 0, 255),
@@ -29,6 +30,23 @@ COLORS = {
 def _solid_hsv(hue: int, saturation: int, value: int, size: int = 120) -> np.ndarray:
     hsv = np.full((size, size, 3), (hue, saturation, value), dtype=np.uint8)
     return cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
+
+
+def test_continue_button_detects_result_panel_and_green_pill() -> None:
+    hsv = np.zeros((1280, 574, 3), dtype=np.uint8)
+    hsv[500:1230] = (15, 150, 220)
+    cv2.rectangle(hsv, (140, 960), (440, 1045), (65, 220, 160), -1)
+    image = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
+    success, png = cv2.imencode(".png", image)
+    assert success
+    assert continue_button(png.tobytes()) == (290, 1003)
+
+
+def test_continue_button_rejects_green_board_without_result_panel() -> None:
+    image = np.full((1280, 574, 3), (0, 180, 0), dtype=np.uint8)
+    success, png = cv2.imencode(".png", image)
+    assert success
+    assert continue_button(png.tobytes()) is None
 
 
 ORDINARY_GEM_CASES = [
@@ -207,6 +225,19 @@ def test_histogram_template_rejects_ambiguous_color() -> None:
     assert classify_hue_histogram(histogram) == UNKNOWN_GEM
 
 
+def test_unknown_fallback_recovers_gem_under_bright_effect() -> None:
+    patch = _solid_hsv(150, 220, 220, 120)
+    cv2.line(patch, (0, 70), (119, 40), (255, 255, 255), 22)
+    cv2.circle(patch, (60, 60), 22, (255, 255, 255), 8)
+    assert classify_unknown_gem(patch) == 4
+
+
+def test_unknown_fallback_rejects_balanced_competing_colors() -> None:
+    patch = _solid_hsv(3, 220, 220, 120)
+    patch[:, 60:] = _solid_hsv(105, 220, 220, 120)[:, 60:]
+    assert classify_unknown_gem(patch) == UNKNOWN_GEM
+
+
 def test_recognizer_distinguishes_dim_shining_green_special() -> None:
     hsv = np.full((100, 100, 3), (60, 140, 170), dtype=np.uint8)
     image = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
@@ -281,3 +312,41 @@ def test_turn_allows_in_game_board_with_existing_symbolic_match() -> None:
     )
     board, _ = decide_turn(png.tobytes(), config)
     assert np.array_equal(board, values)
+
+
+def test_settlement_recognition_can_preserve_one_unknown_cell(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    values = np.tile(np.arange(8) % 7, (8, 1))
+    image = np.zeros((800, 800, 3), dtype=np.uint8)
+    for row in range(8):
+        for column in range(8):
+            image[row * 100 : (row + 1) * 100, column * 100 : (column + 1) * 100] = (
+                COLORS[int(values[row, column])]
+            )
+    success, png = cv2.imencode(".png", image)
+    assert success
+    config = AppConfig(
+        schema_version=1,
+        device_serial="test:1",
+        screenshot_width=800,
+        screenshot_height=900,
+        capture_timeout_seconds=1,
+        capture_retries=0,
+        geometry=BoardGeometry(8, 8, 0, 0, 800, 800),
+        recognizer_profile="test",
+        rule_set="test",
+        random_seed=1,
+        planning_budget_seconds=1,
+        swipe_duration_ms=120,
+        frame_retention="none",
+        progress_region=(0, 810, 800, 830),
+        progress_full_threshold=0.8,
+    )
+    recognized = values.astype(np.int8)
+    recognized[3, 4] = UNKNOWN_GEM
+    monkeypatch.setattr("bejeweled_player.turn.recognize_board", lambda *args: recognized)
+    board = _recognize_frame(png.tobytes(), config, max_unknown=1)
+    assert board[3, 4] == UNKNOWN_GEM
+    with pytest.raises(ValueError, match="1/64 unknown cells"):
+        decide_turn(png.tobytes(), config)

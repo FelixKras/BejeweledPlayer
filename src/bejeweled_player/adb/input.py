@@ -49,3 +49,13 @@ class AdbActionSink:
             error = result.stderr.decode(errors="replace").strip()
             raise AdbError(f"swipe failed: {error or f'exit {result.returncode}'}")
         return uuid.uuid4().hex
+
+    def tap(self, point: tuple[int, int]) -> str:
+        result = self._runner(
+            [*self._command, "shell", "input", "tap", str(point[0]), str(point[1])],
+            self._timeout,
+        )
+        if result.returncode != 0:
+            error = result.stderr.decode(errors="replace").strip()
+            raise AdbError(f"tap failed: {error or f'exit {result.returncode}'}")
+        return uuid.uuid4().hex
