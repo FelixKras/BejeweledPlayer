@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import time
+from collections import deque
 from dataclasses import asdict
 from datetime import UTC, datetime
 from pathlib import Path
@@ -23,6 +24,7 @@ from .domain import Coordinate, Frame, Move
 from .vision import render_grid_overlay
 
 GEM_SYMBOLS = ("R", "G", "B", "Y", "P", "O", "W", "C", "X", "?")
+_SETTLEMENT_DEBUG_FRAME_COUNT = 5
 
 
 def board_text(board: np.ndarray) -> str:
@@ -188,6 +190,7 @@ def run_turn(
                 settle_seconds,
                 settle_timeout_seconds,
                 poll_seconds,
+                session,
             )
         except Exception:
             if config.frame_retention == "errors":
@@ -217,6 +220,7 @@ def _capture_settled(
     minimum_wait: float,
     timeout: float,
     poll_seconds: float,
+    debug_dir: Path | None = None,
 ) -> Frame:
     time.sleep(minimum_wait)
     deadline = time.monotonic() + timeout
@@ -225,9 +229,15 @@ def _capture_settled(
     last_error: ValueError | None = None
     transition_started = False
     board_changed = False
+    samples: deque[tuple[Frame, dict[str, object]]] = deque(
+        maxlen=_SETTLEMENT_DEBUG_FRAME_COUNT
+    )
     while time.monotonic() < deadline:
         frame = source.capture()
+        sample: dict[str, object] = {"frame_id": frame.frame_id}
+        samples.append((frame, sample))
         button = continue_button(frame.png)
+        sample["continue_button"] = button is not None
         if button is not None:
             AdbActionSink(
                 config.device_serial,
@@ -239,6 +249,7 @@ def _capture_settled(
             previous = None
             continue
         progress = progress_fraction(frame.png, config)
+        sample["progress_fraction"] = progress
         if progress >= config.progress_full_threshold:
             transition_started = True
             previous = None
@@ -254,14 +265,23 @@ def _capture_settled(
             board = _recognize_frame(frame.png, config, max_unknown=2)
         except ValueError as error:
             last_error = error
+            sample["recognition_error"] = str(error)
             time.sleep(poll_seconds)
             continue
+        sample["board"] = board.tolist()
+        sample["unknown_count"] = int(np.count_nonzero(board == UNKNOWN_GEM))
         board_changed = board_changed or _board_changed_after_move(before_board, board)
+        sample["board_changed_after_move"] = board_changed
         anchor_stable = (
             previous_frame is not None
             and foreground_change_fraction(previous_frame.png, frame.png, config)
             <= config.foreground_change_threshold
         )
+        if previous_frame is not None:
+            sample["foreground_change_fraction"] = foreground_change_fraction(
+                previous_frame.png, frame.png, config
+            )
+        sample["foreground_anchor_stable"] = anchor_stable
         if (
             board_changed
             and anchor_stable
@@ -272,7 +292,30 @@ def _capture_settled(
         previous = board
         previous_frame = frame
         time.sleep(poll_seconds)
+    if debug_dir is not None:
+        _write_settlement_debug(debug_dir, samples, last_error)
     raise RuntimeError(f"board did not settle within {timeout:g}s: {last_error or 'changed'}")
+
+
+def _write_settlement_debug(
+    debug_dir: Path,
+    samples: deque[tuple[Frame, dict[str, object]]],
+    last_error: ValueError | None,
+) -> None:
+    debug_dir.mkdir(parents=True, exist_ok=True)
+    records: list[dict[str, object]] = []
+    for index, (frame, details) in enumerate(samples):
+        filename = f"{index:02d}-{frame.frame_id}.png"
+        (debug_dir / filename).write_bytes(frame.png)
+        details["path"] = filename
+        records.append(details)
+    (debug_dir / "summary.json").write_text(
+        json.dumps(
+            {"last_error": str(last_error) if last_error else None, "frames": records},
+            indent=2,
+        )
+        + "\n"
+    )
 
 
 def _board_changed_after_move(before: np.ndarray, current: np.ndarray) -> bool:

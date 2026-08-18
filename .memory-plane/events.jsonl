@@ -25,3 +25,4 @@
 {"actor": "Forge", "event": "proposed", "id": "mp-20260815-a694739cfb", "path": ".memory-plane/proposals/special-aware-utility-supersedes-immediate-match-first-ranking-739cfb.md", "ts": "2026-08-15T17:23:17.802409Z"}
 {"actor": "Forge", "event": "proposed", "id": "mp-20260818-f1eab67364", "path": ".memory-plane/proposals/require-stable-out-of-board-foreground-anchor-for-settlement-b67364.md", "ts": "2026-08-18T03:22:43.471907Z"}
 {"actor": "Forge", "event": "proposed", "id": "mp-20260818-0f480ea4c5", "path": ".memory-plane/proposals/commit-active-special-gem-recognition-and-strategy-changes-0ea4c5.md", "ts": "2026-08-18T03:47:12.525634Z"}
+{"actor": "Forge", "event": "proposed", "id": "mp-20260818-129eab3f91", "path": ".memory-plane/proposals/capture-bounded-settlement-diagnostics-on-timeout-ab3f91.md", "ts": "2026-08-18T04:32:11.264627Z"}

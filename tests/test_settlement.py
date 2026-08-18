@@ -1,11 +1,15 @@
+from collections import deque
+
 import cv2
 import numpy as np
 
 from bejeweled_player.config import AppConfig
+from bejeweled_player.domain import Frame
 from bejeweled_player.interfaces import BoardGeometry
 from bejeweled_player.turn import (
     _board_changed_after_move,
     _boards_equivalent_for_settlement,
+    _write_settlement_debug,
     foreground_change_fraction,
 )
 
@@ -103,3 +107,29 @@ def test_foreground_anchor_rejects_screen_transition() -> None:
     current = previous.copy()
     current[10:, 10:] = 255
     assert foreground_change_fraction(_png(previous), _png(current), _config()) > 0.08
+
+
+def test_settlement_debug_writes_only_the_last_five_frames(tmp_path) -> None:
+    frames = deque(
+        (
+            (
+                Frame(
+                    str(index),
+                    float(index),
+                    _png(np.full((20, 20), index, np.uint8)),
+                    20,
+                    20,
+                ),
+                {},
+            )
+            for index in range(7)
+        ),
+        maxlen=5,
+    )
+
+    _write_settlement_debug(tmp_path, frames, ValueError("changed"))
+
+    assert len(list(tmp_path.glob("*.png"))) == 5
+    summary = (tmp_path / "summary.json").read_text()
+    assert '"last_error": "changed"' in summary
+    assert '"path"' in summary
