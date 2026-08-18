@@ -6,7 +6,10 @@ import cv2
 import numpy as np
 
 Cell = tuple[int, int]
+HYPERCUBE = 7
 UNKNOWN_GEM = 9
+FLAME_GEM_BASE = 10
+STAR_GEM_BASE = 17
 
 _HUE_TEMPLATE_BINS = {
     0: (0, 17),
@@ -54,6 +57,12 @@ def recognize_board(
                 max(0, x - histogram_radius):x + histogram_radius,
             ]
             histogram_hsv = cv2.cvtColor(histogram_patch, cv2.COLOR_BGR2HSV)
+            effect_radius = max(radius, cell_size // 2)
+            effect_patch = crop[
+                max(0, y - effect_radius):min(crop.shape[0], y + effect_radius),
+                max(0, x - effect_radius):min(crop.shape[1], x + effect_radius),
+            ]
+            effect_hsv = cv2.cvtColor(effect_patch, cv2.COLOR_BGR2HSV)
             saturated_hues = histogram_hsv[:, :, 0][histogram_hsv[:, :, 1] >= 90]
             histogram = np.histogram(saturated_hues, bins=18, range=(0, 180))[0]
             hue_families = (
@@ -71,17 +80,17 @@ def recognize_board(
             hypercube = second_family_ratio >= 0.50
             histogram_saturation = float(np.median(histogram_hsv[:, :, 1]))
             histogram_value = float(np.median(histogram_hsv[:, :, 2]))
-            if (
+            star_gem = (
                 40 <= hue < 85
                 and saturation >= 70
                 and histogram_saturation < 170
                 and histogram_value < 190
-            ):
-                label = 8  # shining row-and-column special
-            elif saturation >= 70 and hypercube and (
+            )
+            flame_gem = _has_flame_effect(effect_hsv)
+            if saturation >= 70 and hypercube and (
                 saturated_fraction < 0.85 or significant_hue_bins <= 2
             ):
-                label = 7  # hypercube
+                label = HYPERCUBE
             elif saturation < 70:
                 label = 6  # white
             else:
@@ -90,6 +99,10 @@ def recognize_board(
                     label = classify_unknown_gem(histogram_patch)
                 if label == UNKNOWN_GEM:
                     label = classify_hue(float(hue))
+            if 0 <= label < 7 and star_gem:
+                label = STAR_GEM_BASE + label
+            elif 0 <= label < 7 and flame_gem:
+                label = FLAME_GEM_BASE + label
             labels.append(label)
     return np.asarray(labels, dtype=np.int8).reshape(rows, cols)
 
@@ -174,20 +187,59 @@ def classify_hue(hue: float) -> int:
     return 4
 
 
+def _has_flame_effect(hsv: np.ndarray) -> bool:
+    """Identify the bright orange ring surrounding a Flame Gem."""
+    height, width = hsv.shape[:2]
+    yy, xx = np.ogrid[:height, :width]
+    distance = np.maximum(
+        np.abs(xx - (width - 1) / 2) / max(1, width / 2),
+        np.abs(yy - (height - 1) / 2) / max(1, height / 2),
+    )
+    orange = (
+        (hsv[:, :, 0] >= 3)
+        & (hsv[:, :, 0] <= 22)
+        & (hsv[:, :, 1] >= 130)
+        & (hsv[:, :, 2] >= 180)
+    )
+    ring = (distance > 0.50) & (distance < 0.85)
+    center = distance < 0.40
+    return float(np.mean(orange[ring])) >= 0.05 and float(np.mean(orange[center])) < 0.10
+
+
+def gem_color(label: int) -> int | None:
+    if 0 <= label < 7:
+        return label
+    if FLAME_GEM_BASE <= label < FLAME_GEM_BASE + 7:
+        return label - FLAME_GEM_BASE
+    if STAR_GEM_BASE <= label < STAR_GEM_BASE + 7:
+        return label - STAR_GEM_BASE
+    return None
+
+
 def matched_cells(board: np.ndarray) -> set[Cell]:
     rows, cols = board.shape
     matches: set[Cell] = set()
     for row in range(rows):
         start = 0
         for col in range(1, cols + 1):
-            if col == cols or board[row, col] != board[row, start] or board[row, start] >= 7:
+            start_color = gem_color(int(board[row, start]))
+            if (
+                col == cols
+                or gem_color(int(board[row, col])) != start_color
+                or start_color is None
+            ):
                 if col - start >= 3:
                     matches.update((row, c) for c in range(start, col))
                 start = col
     for col in range(cols):
         start = 0
         for row in range(1, rows + 1):
-            if row == rows or board[row, col] != board[start, col] or board[start, col] >= 7:
+            start_color = gem_color(int(board[start, col]))
+            if (
+                row == rows
+                or gem_color(int(board[row, col])) != start_color
+                or start_color is None
+            ):
                 if row - start >= 3:
                     matches.update((r, col) for r in range(start, row))
                 start = row
@@ -198,57 +250,124 @@ def find_best_move(board: np.ndarray) -> Move | None:
     rows, cols = board.shape
     baseline = matched_cells(board)
     best: Move | None = None
-    best_priority = (-1, -1)
+    best_value = -1
     for row in range(rows):
         for col in range(cols):
             for dr, dc in ((0, 1), (1, 0)):
                 other = (row + dr, col + dc)
                 if other[0] >= rows or other[1] >= cols:
                     continue
-                if board[row, col] >= 7 or board[other] >= 7:
+                first = int(board[row, col])
+                second = int(board[other])
+                if first == HYPERCUBE or second == HYPERCUBE:
+                    move = _score_hypercube_swap(board, (row, col), other)
+                    if move is not None:
+                        value = move.score * 100 + 500
+                        if value > best_value:
+                            best = move
+                            best_value = value
+                    continue
+                if gem_color(first) is None or gem_color(second) is None:
                     continue
                 candidate = board.copy()
                 candidate[row, col], candidate[other] = candidate[other], candidate[row, col]
                 score = len(matched_cells(candidate) - baseline)
-                priority = (score, strategic_value(candidate, score, rows - row))
-                if score >= 3 and priority > best_priority:
+                value = strategic_value(candidate, score, rows - row, baseline)
+                if score >= 3 and value > best_value:
                     best = Move((row, col), other, score)
-                    best_priority = priority
+                    best_value = value
     return best
 
 
 def find_hypercube_move(board: np.ndarray) -> Move | None:
     """Activate a hypercube against the most frequent adjacent color."""
-    counts = np.bincount(board[board < 7], minlength=7)
     best: Move | None = None
     best_count = -1
     rows, cols = board.shape
-    for row, col in np.argwhere(board == 7):
+    for row, col in np.argwhere(board == HYPERCUBE):
         for dr, dc in ((-1, 0), (0, -1), (0, 1), (1, 0)):
             other = (int(row + dr), int(col + dc))
             if not (0 <= other[0] < rows and 0 <= other[1] < cols):
                 continue
-            color = int(board[other])
-            if color >= 7:
+            move = _score_hypercube_swap(board, (int(row), int(col)), other)
+            if move is None:
                 continue
-            count = int(counts[color])
-            if count > best_count:
-                best = Move((int(row), int(col)), other, count)
-                best_count = count
+            if move.score > best_count:
+                best = move
+                best_count = move.score
     return best
 
 
-def strategic_value(board: np.ndarray, immediate_score: int, top_down_bias: int = 0) -> int:
-    """Rank ordinary moves by points first, then useful follow-up structure."""
+def _score_hypercube_swap(board: np.ndarray, first: Cell, second: Cell) -> Move | None:
+    first_label, second_label = int(board[first]), int(board[second])
+    if first_label == HYPERCUBE and second_label == HYPERCUBE:
+        return Move(first, second, board.size)
+    if first_label == HYPERCUBE:
+        hypercube, neighbor = first, second
+    elif second_label == HYPERCUBE:
+        hypercube, neighbor = second, first
+    else:
+        return None
+    color = gem_color(int(board[neighbor]))
+    if color is None:
+        return None
+    count = sum(gem_color(int(label)) == color for label in board.flat)
+    return Move(hypercube, neighbor, count)
+
+
+def strategic_value(
+    board: np.ndarray,
+    immediate_score: int,
+    top_down_bias: int = 0,
+    baseline: set[Cell] | None = None,
+) -> int:
+    """Rank moves by points, special creation, preservation, and follow-up structure."""
     value = immediate_score * 100
-    if immediate_score >= 5:
-        value += 1000
+    new_matches = matched_cells(board) - (baseline or set())
+    if creates_hypercube(board, new_matches):
+        value += 5000
     elif immediate_score == 4:
         value += 400
+    value -= hypercube_blast_risk(board, new_matches) * 10_000
     value += setup_potential(board) * 3
     value += len(legal_swap_count(board))
     value += top_down_bias
     return value
+
+
+def creates_hypercube(board: np.ndarray, matches: set[Cell]) -> bool:
+    """Return whether the resolved swap forms a straight run of at least five."""
+    for row in range(board.shape[0]):
+        columns = sorted(col for matched_row, col in matches if matched_row == row)
+        if _has_five_consecutive(columns):
+            return True
+    for col in range(board.shape[1]):
+        rows = sorted(row for row, matched_col in matches if matched_col == col)
+        if _has_five_consecutive(rows):
+            return True
+    return False
+
+
+def _has_five_consecutive(values: list[int]) -> bool:
+    return any(values[index + 4] - values[index] == 4 for index in range(len(values) - 4))
+
+
+def hypercube_blast_risk(board: np.ndarray, activated: set[Cell]) -> int:
+    """Count stored hypercubes reached by directly activated Flame and Star Gems."""
+    threatened: set[Cell] = set()
+    rows, cols = board.shape
+    for row, col in activated:
+        label = int(board[row, col])
+        if FLAME_GEM_BASE <= label < FLAME_GEM_BASE + 7:
+            threatened.update(
+                (r, c)
+                for r in range(max(0, row - 1), min(rows, row + 2))
+                for c in range(max(0, col - 1), min(cols, col + 2))
+            )
+        elif STAR_GEM_BASE <= label < STAR_GEM_BASE + 7:
+            threatened.update((row, c) for c in range(cols))
+            threatened.update((r, col) for r in range(rows))
+    return sum(int(board[cell]) == HYPERCUBE for cell in threatened)
 
 
 def setup_potential(board: np.ndarray) -> int:
@@ -278,7 +397,7 @@ def legal_swap_count(board: np.ndarray) -> set[tuple[Cell, Cell]]:
                 other = (row + dr, col + dc)
                 if other[0] >= rows or other[1] >= cols:
                     continue
-                if board[row, col] >= 7 or board[other] >= 7:
+                if gem_color(int(board[row, col])) is None or gem_color(int(board[other])) is None:
                     continue
                 candidate = board.copy()
                 candidate[row, col], candidate[other] = candidate[other], candidate[row, col]

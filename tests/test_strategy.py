@@ -1,8 +1,14 @@
 import numpy as np
-import pytest
 
-from bejeweled_player import board as board_module
-from bejeweled_player.board import find_best_move, find_hypercube_move, matched_cells
+from bejeweled_player.board import (
+    FLAME_GEM_BASE,
+    STAR_GEM_BASE,
+    creates_hypercube,
+    find_best_move,
+    find_hypercube_move,
+    hypercube_blast_risk,
+    matched_cells,
+)
 
 
 def test_special_cells_do_not_count_as_ordinary_matches() -> None:
@@ -26,29 +32,45 @@ def test_strategy_prefers_five_match_over_three_match() -> None:
     assert move.score >= 4
 
 
-def test_match_size_cannot_be_outweighed_by_secondary_strategy(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
+def test_strategy_prefers_hypercube_creation_over_larger_immediate_match() -> None:
     board = np.array(
         [
-            [4, 5, 1, 2, 2, 1],
-            [3, 2, 3, 1, 3, 2],
-            [0, 4, 1, 5, 4, 3],
-            [1, 4, 3, 5, 0, 3],
-            [1, 0, 4, 3, 4, 0],
-            [0, 4, 1, 5, 2, 2],
+            [3, 3, 5, 3, 3, 1],
+            [4, 4, 3, 0, 3, 0],
+            [5, 1, 2, 4, 0, 2],
+            [4, 0, 5, 1, 3, 3],
+            [3, 0, 5, 1, 3, 1],
+            [5, 4, 0, 0, 4, 2],
         ]
     )
-    monkeypatch.setattr(
-        board_module,
-        "strategic_value",
-        lambda _board, score, _bias: 1_000_000 if score == 3 else 0,
-    )
-
     move = find_best_move(board)
 
     assert move is not None
-    assert move.score >= 4
+    assert move.score == 5
+    assert {move.start, move.end} == {(0, 2), (1, 2)}
+
+
+def test_colored_specials_participate_in_ordinary_matches() -> None:
+    board = np.array([[1, FLAME_GEM_BASE + 1, STAR_GEM_BASE + 1]])
+    assert matched_cells(board) == {(0, 0), (0, 1), (0, 2)}
+
+
+def test_detects_straight_five_as_hypercube_creation() -> None:
+    board = np.array([[2, 2, 2, 2, 2], [0, 1, 3, 4, 5]])
+    assert creates_hypercube(board, matched_cells(board))
+
+
+def test_flame_and_star_blasts_report_stored_hypercube_risk() -> None:
+    board = np.array(
+        [
+            [7, 0, 0, 0],
+            [1, FLAME_GEM_BASE + 1, 1, 0],
+            [0, 0, STAR_GEM_BASE + 2, 7],
+            [0, 0, 2, 0],
+        ]
+    )
+    assert hypercube_blast_risk(board, {(1, 1)}) == 1
+    assert hypercube_blast_risk(board, {(2, 2)}) == 1
 
 
 def test_hypercube_targets_adjacent_globally_most_frequent_color() -> None:
@@ -76,5 +98,21 @@ def test_hypercube_fallback_is_deterministic_on_frequency_tie() -> None:
     assert move.end == (0, 1)
 
 
-def test_hypercube_fallback_requires_an_ordinary_neighbor() -> None:
-    assert find_hypercube_move(np.full((2, 2), 7)) is None
+def test_hypercube_pair_clears_the_board() -> None:
+    move = find_hypercube_move(np.full((2, 2), 7))
+    assert move is not None
+    assert move.score == 4
+
+
+def test_hypercube_is_ranked_with_ordinary_moves() -> None:
+    board = np.array(
+        [
+            [2, 2, 2, 2],
+            [1, 7, 2, 3],
+            [1, 4, 5, 6],
+            [0, 1, 4, 5],
+        ]
+    )
+    move = find_best_move(board)
+    assert move is not None
+    assert move.start == (1, 1)

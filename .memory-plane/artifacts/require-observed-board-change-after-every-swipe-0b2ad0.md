@@ -3,10 +3,12 @@ id: mp-20260813-c24d0b2ad0
 kind: decision
 title: Require observed board change after every swipe
 scope: project
-status: proposed
+status: approved
 created_at: 2026-08-13T03:32:27.023659Z
 author: Forge
 confidence: 0.99
+approved_at: 2026-08-13T09:41:41.074075Z
+reviewer: Felix
 source_refs:
   - src/bejeweled_player/turn.py; tests/test_settlement.py; sessions/play-20260812T203742.274360Z/summary.json; pytest
 tags:

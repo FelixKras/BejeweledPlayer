@@ -121,7 +121,7 @@ def test_recognizer_classifies_shining_green_special_variants(
 ) -> None:
     image = _solid_hsv(hue, saturation, value)
     recognized = recognize_board(image, (0, 0, 120, 120), 1, 1, 7)
-    assert recognized[0, 0] == 8
+    assert recognized[0, 0] == 18
 
 
 def test_special_gem_reference_board_recognizes_hypercube_and_flame_identities() -> None:
@@ -132,19 +132,19 @@ def test_special_gem_reference_board_recognizes_hypercube_and_flame_identities()
     expected = np.array(
         [
             [0, 0, 3, 6, 6, 3, 4, 1],
-            [0, 1, 2, 6, 2, 0, 2, 3],
+            [0, 1, 2, 6, 2, 10, 2, 3],
             [5, 5, 3, 1, 4, 2, 2, 1],
-            [6, 4, 3, 2, 0, 4, 5, 1],
+            [16, 4, 3, 2, 0, 4, 5, 1],
             [0, 1, 2, 6, 1, 4, 0, 3],
             [1, 2, 1, 6, 3, 0, 7, 6],
             [2, 2, 0, 5, 6, 0, 2, 5],
-            [3, 6, 4, 0, 4, 3, 3, 1],
+            [3, 6, 4, 10, 4, 3, 3, 1],
         ]
     )
     assert np.array_equal(recognized, expected)
-    assert recognized[1, 5] == 0  # red with flame effect
-    assert recognized[3, 0] == 6  # white with flame effect
-    assert recognized[7, 3] == 0  # red with flame effect
+    assert recognized[1, 5] == 10  # red Flame Gem
+    assert recognized[3, 0] == 16  # white Flame Gem
+    assert recognized[7, 3] == 10  # red Flame Gem
 
 
 def test_labeled_warm_color_cubes_are_not_hypercubes() -> None:
@@ -242,7 +242,7 @@ def test_recognizer_distinguishes_dim_shining_green_special() -> None:
     hsv = np.full((100, 100, 3), (60, 140, 170), dtype=np.uint8)
     image = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
     recognized = recognize_board(image, (0, 0, 100, 100), 1, 1, 7)
-    assert recognized[0, 0] == 8
+    assert recognized[0, 0] == 18
 
 
 def test_recognizer_keeps_rendered_green_as_ordinary() -> None:
