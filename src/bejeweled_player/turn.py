@@ -10,7 +10,13 @@ import cv2
 import numpy as np
 
 from .adb import AdbActionSink, AdbFrameSource
-from .board import UNKNOWN_GEM, find_best_move, find_hypercube_move, recognize_board
+from .board import (
+    FLAME_GEM_BASE,
+    STAR_GEM_BASE,
+    UNKNOWN_GEM,
+    find_best_move,
+    recognize_board,
+)
 from .board import Move as ScoredMove
 from .config import AppConfig
 from .domain import Coordinate, Frame, Move
@@ -20,7 +26,14 @@ GEM_SYMBOLS = ("R", "G", "B", "Y", "P", "O", "W", "C", "X", "?")
 
 
 def board_text(board: np.ndarray) -> str:
-    return "\n".join(" ".join(GEM_SYMBOLS[int(cell)] for cell in row) for row in board)
+    def symbol(label: int) -> str:
+        if FLAME_GEM_BASE <= label < FLAME_GEM_BASE + 7:
+            return f"F{GEM_SYMBOLS[label - FLAME_GEM_BASE]}"
+        if STAR_GEM_BASE <= label < STAR_GEM_BASE + 7:
+            return f"S{GEM_SYMBOLS[label - STAR_GEM_BASE]}"
+        return GEM_SYMBOLS[label]
+
+    return "\n".join(" ".join(symbol(int(cell)) for cell in row) for row in board)
 
 
 def progress_fraction(png: bytes, config: AppConfig) -> float:
@@ -32,6 +45,16 @@ def progress_fraction(png: bytes, config: AppConfig) -> float:
     blue = ((hsv[:, :, 0] >= 85) & (hsv[:, :, 0] <= 135) & (hsv[:, :, 1] >= 60))
     columns = np.count_nonzero(blue, axis=0)
     return float(np.mean(columns > max(2, (bottom - top) // 10)))
+
+
+def foreground_change_fraction(previous_png: bytes, current_png: bytes, config: AppConfig) -> float:
+    previous = cv2.imdecode(np.frombuffer(previous_png, dtype=np.uint8), cv2.IMREAD_GRAYSCALE)
+    current = cv2.imdecode(np.frombuffer(current_png, dtype=np.uint8), cv2.IMREAD_GRAYSCALE)
+    if previous is None or current is None or previous.shape != current.shape:
+        return 1.0
+    left, top, right, bottom = config.foreground_region
+    difference = cv2.absdiff(previous[top:bottom, left:right], current[top:bottom, left:right])
+    return float(np.mean(difference > 20))
 
 
 def continue_button(png: bytes) -> tuple[int, int] | None:
@@ -75,7 +98,7 @@ def decide_turn(png: bytes, config: AppConfig) -> tuple[np.ndarray, ScoredMove |
     unknown_count = int(np.count_nonzero(board == UNKNOWN_GEM))
     if unknown_count:
         raise ValueError(f"board recognition uncertain: {unknown_count}/64 unknown cells")
-    return board, find_best_move(board) or find_hypercube_move(board)
+    return board, find_best_move(board)
 
 
 def _recognize_frame(png: bytes, config: AppConfig, max_unknown: int = 0) -> np.ndarray:
@@ -198,13 +221,12 @@ def _capture_settled(
     time.sleep(minimum_wait)
     deadline = time.monotonic() + timeout
     previous: np.ndarray | None = None
+    previous_frame: Frame | None = None
     last_error: ValueError | None = None
     transition_started = False
     board_changed = False
     while time.monotonic() < deadline:
-        capture_started = time.monotonic()
         frame = source.capture()
-        capture_seconds = time.monotonic() - capture_started
         button = continue_button(frame.png)
         if button is not None:
             AdbActionSink(
@@ -235,11 +257,20 @@ def _capture_settled(
             time.sleep(poll_seconds)
             continue
         board_changed = board_changed or _board_changed_after_move(before_board, board)
-        if board_changed and capture_seconds >= 2.0 and not np.any(board == UNKNOWN_GEM):
-            return frame
-        if board_changed and previous is not None and _boards_equivalent_for_settlement(previous, board):
+        anchor_stable = (
+            previous_frame is not None
+            and foreground_change_fraction(previous_frame.png, frame.png, config)
+            <= config.foreground_change_threshold
+        )
+        if (
+            board_changed
+            and anchor_stable
+            and previous is not None
+            and _boards_equivalent_for_settlement(previous, board)
+        ):
             return frame
         previous = board
+        previous_frame = frame
         time.sleep(poll_seconds)
     raise RuntimeError(f"board did not settle within {timeout:g}s: {last_error or 'changed'}")
 

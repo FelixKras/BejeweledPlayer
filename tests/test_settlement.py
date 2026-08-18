@@ -1,6 +1,41 @@
+import cv2
 import numpy as np
 
-from bejeweled_player.turn import _board_changed_after_move, _boards_equivalent_for_settlement
+from bejeweled_player.config import AppConfig
+from bejeweled_player.interfaces import BoardGeometry
+from bejeweled_player.turn import (
+    _board_changed_after_move,
+    _boards_equivalent_for_settlement,
+    foreground_change_fraction,
+)
+
+
+def _config() -> AppConfig:
+    return AppConfig(
+        schema_version=1,
+        device_serial="test:1",
+        screenshot_width=20,
+        screenshot_height=20,
+        capture_timeout_seconds=1,
+        capture_retries=0,
+        geometry=BoardGeometry(8, 8, 0, 0, 8, 8),
+        recognizer_profile="test",
+        rule_set="test",
+        random_seed=1,
+        planning_budget_seconds=1,
+        swipe_duration_ms=120,
+        frame_retention="none",
+        progress_region=(0, 8, 20, 10),
+        progress_full_threshold=0.8,
+        foreground_region=(10, 10, 20, 20),
+        foreground_change_threshold=0.08,
+    )
+
+
+def _png(image: np.ndarray) -> bytes:
+    success, encoded = cv2.imencode(".png", image)
+    assert success
+    return encoded.tobytes()
 
 
 def test_move_change_rejects_unchanged_board() -> None:
@@ -54,3 +89,17 @@ def test_settlement_allows_eight_animated_cells() -> None:
     current = previous.copy()
     current.flat[:8] = (current.flat[:8] + 1) % 7
     assert _boards_equivalent_for_settlement(previous, current)
+
+
+def test_foreground_anchor_ignores_board_changes() -> None:
+    previous = np.zeros((20, 20), dtype=np.uint8)
+    current = previous.copy()
+    current[:8, :8] = 255
+    assert foreground_change_fraction(_png(previous), _png(current), _config()) == 0
+
+
+def test_foreground_anchor_rejects_screen_transition() -> None:
+    previous = np.zeros((20, 20), dtype=np.uint8)
+    current = previous.copy()
+    current[10:, 10:] = 255
+    assert foreground_change_fraction(_png(previous), _png(current), _config()) > 0.08

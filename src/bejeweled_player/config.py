@@ -39,6 +39,8 @@ class AppConfig:
     frame_retention: str
     progress_region: tuple[int, int, int, int]
     progress_full_threshold: float
+    foreground_region: tuple[int, int, int, int] = (0, 0, 1, 1)
+    foreground_change_threshold: float = 0.08
 
 
 def _section(data: Mapping[str, Any], name: str, allowed: set[str]) -> Mapping[str, Any]:
@@ -70,7 +72,22 @@ def load_config(path: Path) -> AppConfig:
     planner = _section(data, "planner", {"random_seed", "budget_seconds"})
     action = _section(data, "action", {"swipe_duration_ms"})
     logging = _section(data, "logging", {"frame_retention"})
-    ui = _section(data, "ui_detection", {"progress_left", "progress_top", "progress_right", "progress_bottom", "progress_full_threshold"})
+    ui = _section(
+        data,
+        "ui_detection",
+        {
+            "progress_left",
+            "progress_top",
+            "progress_right",
+            "progress_bottom",
+            "progress_full_threshold",
+            "foreground_left",
+            "foreground_top",
+            "foreground_right",
+            "foreground_bottom",
+            "foreground_change_threshold",
+        },
+    )
 
     result = AppConfig(
         schema_version=1,
@@ -93,6 +110,13 @@ def load_config(path: Path) -> AppConfig:
             int(ui["progress_bottom"]),
         ),
         progress_full_threshold=float(ui["progress_full_threshold"]),
+        foreground_region=(
+            int(ui["foreground_left"]),
+            int(ui["foreground_top"]),
+            int(ui["foreground_right"]),
+            int(ui["foreground_bottom"]),
+        ),
+        foreground_change_threshold=float(ui["foreground_change_threshold"]),
     )
     _validate(result)
     return result
@@ -119,3 +143,8 @@ def _validate(config: AppConfig) -> None:
         raise ValueError("progress region is outside the screenshot")
     if not 0 < config.progress_full_threshold <= 1:
         raise ValueError("progress_full_threshold must be between 0 and 1")
+    left, top, right, bottom = config.foreground_region
+    if not (0 <= left < right <= config.screenshot_width and 0 <= top < bottom <= config.screenshot_height):
+        raise ValueError("foreground region is outside the screenshot")
+    if not 0 <= config.foreground_change_threshold <= 1:
+        raise ValueError("foreground change threshold must be between 0 and 1")
