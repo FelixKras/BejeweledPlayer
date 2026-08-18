@@ -116,3 +116,25 @@ def test_hypercube_is_ranked_with_ordinary_moves() -> None:
     move = find_best_move(board)
     assert move is not None
     assert move.start == (1, 1)
+
+
+def test_strategy_skips_rejected_move() -> None:
+    board = np.array(
+        [
+            [4, 4, 0, 0, 5, 0, 1, 0],
+            [0, 5, 2, 2, 5, 4, 6, 4],
+            [2, 2, 6, 3, 4, 2, 3, 0],
+            [0, 1, 5, 1, 4, 5, 2, 2],
+            [6, 4, 4, 6, 3, 2, 5, 1],
+            [0, 2, 2, 1, 4, 5, 0, 2],
+            [4, 1, 1, 6, 3, 0, 1, 0],
+            [2, 5, 6, 3, 1, 0, 2, 1],
+        ]
+    )
+    rejected = find_best_move(board)
+    assert rejected is not None
+
+    alternative = find_best_move(board, {(rejected.start, rejected.end)})
+
+    assert alternative is not None
+    assert (alternative.start, alternative.end) != (rejected.start, rejected.end)

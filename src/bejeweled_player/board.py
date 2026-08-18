@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Collection
 from dataclasses import dataclass
 
 import cv2
@@ -77,7 +78,11 @@ def recognize_board(
             significant_hue_bins = int(np.count_nonzero(histogram > np.sum(histogram) * 0.05))
             # Confirmed rotation phases span all four dominant families, but each
             # retains at least half as much mass in a second broad hue family.
-            hypercube = second_family_ratio >= 0.50
+            hypercube = second_family_ratio >= 0.50 or (
+                second_family_ratio >= 0.35
+                and saturated_fraction < 0.70
+                and significant_hue_bins >= 3
+            )
             histogram_saturation = float(np.median(histogram_hsv[:, :, 1]))
             histogram_value = float(np.median(histogram_hsv[:, :, 2]))
             star_gem = (
@@ -246,7 +251,10 @@ def matched_cells(board: np.ndarray) -> set[Cell]:
     return matches
 
 
-def find_best_move(board: np.ndarray) -> Move | None:
+def find_best_move(
+    board: np.ndarray,
+    excluded_moves: Collection[tuple[Cell, Cell]] = (),
+) -> Move | None:
     rows, cols = board.shape
     baseline = matched_cells(board)
     best: Move | None = None
@@ -256,6 +264,8 @@ def find_best_move(board: np.ndarray) -> Move | None:
             for dr, dc in ((0, 1), (1, 0)):
                 other = (row + dr, col + dc)
                 if other[0] >= rows or other[1] >= cols:
+                    continue
+                if ((row, col), other) in excluded_moves:
                     continue
                 first = int(board[row, col])
                 second = int(board[other])

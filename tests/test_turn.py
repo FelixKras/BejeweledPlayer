@@ -175,6 +175,14 @@ def test_four_real_hypercube_rotation_phases_are_recognized() -> None:
     }
 
 
+def test_dark_red_hypercube_rotation_phase_is_recognized() -> None:
+    fixture = Path(__file__).parents[1] / "datasets/vision-20/hypercube-dark-red-phase.png"
+    image = cv2.imread(str(fixture))
+    assert image is not None
+    recognized = recognize_board(image, (0, 0, 120, 120), 1, 1, 7)
+    assert recognized[0, 0] == 7
+
+
 def test_recognizer_and_immediate_decision_on_synthetic_board() -> None:
     values = np.array(
         [

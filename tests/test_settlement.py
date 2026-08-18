@@ -3,11 +3,13 @@ from collections import deque
 import cv2
 import numpy as np
 
+from bejeweled_player.board import FLAME_GEM_BASE
 from bejeweled_player.config import AppConfig
 from bejeweled_player.domain import Frame
 from bejeweled_player.interfaces import BoardGeometry
 from bejeweled_player.turn import (
     _board_changed_after_move,
+    _boards_equivalent_for_noop,
     _boards_equivalent_for_settlement,
     _write_settlement_debug,
     foreground_change_fraction,
@@ -57,6 +59,24 @@ def test_move_change_accepts_two_ordinary_changes() -> None:
     before = np.array([[1, 2], [3, 4]])
     current = np.array([[2, 1], [3, 4]])
     assert _board_changed_after_move(before, current)
+
+
+def test_move_change_accepts_special_ordinary_swap() -> None:
+    before = np.array([[FLAME_GEM_BASE + 2, 3], [1, 2]])
+    current = np.array([[3, FLAME_GEM_BASE + 2], [1, 2]])
+    assert _board_changed_after_move(before, current)
+
+
+def test_noop_equivalence_allows_one_animated_gem() -> None:
+    before = np.array([[0, 1], [2, 3]])
+    current = np.array([[4, 1], [2, 3]])
+    assert _boards_equivalent_for_noop(before, current)
+
+
+def test_noop_equivalence_rejects_two_changed_gems() -> None:
+    before = np.array([[0, 1], [2, 3]])
+    current = np.array([[4, 5], [2, 3]])
+    assert not _boards_equivalent_for_noop(before, current)
 
 
 def test_settlement_allows_exact_board_match() -> None:

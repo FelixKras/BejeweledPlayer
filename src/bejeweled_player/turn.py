@@ -16,6 +16,7 @@ from .board import (
     STAR_GEM_BASE,
     UNKNOWN_GEM,
     find_best_move,
+    gem_color,
     recognize_board,
 )
 from .board import Move as ScoredMove
@@ -95,12 +96,26 @@ def continue_button(png: bytes) -> tuple[int, int] | None:
     return None
 
 
-def decide_turn(png: bytes, config: AppConfig) -> tuple[np.ndarray, ScoredMove | None]:
+def decide_turn(
+    png: bytes,
+    config: AppConfig,
+    excluded_moves: set[tuple[tuple[int, int], tuple[int, int]]] | None = None,
+) -> tuple[np.ndarray, ScoredMove | None]:
     board = _recognize_frame(png, config)
     unknown_count = int(np.count_nonzero(board == UNKNOWN_GEM))
     if unknown_count:
         raise ValueError(f"board recognition uncertain: {unknown_count}/64 unknown cells")
-    return board, find_best_move(board)
+    return board, find_best_move(board, excluded_moves or ())
+
+
+class RejectedMoveError(RuntimeError):
+    def __init__(self, move: ScoredMove) -> None:
+        super().__init__(f"confirmed no-op move: {move.start}->{move.end}")
+        self.move = move
+
+
+class _ConfirmedNoOpError(RuntimeError):
+    pass
 
 
 def _recognize_frame(png: bytes, config: AppConfig, max_unknown: int = 0) -> np.ndarray:
@@ -135,6 +150,7 @@ def run_turn(
     settle_seconds: float = 0.05,
     settle_timeout_seconds: float = 120.0,
     poll_seconds: float = 0.08,
+    excluded_moves: set[tuple[tuple[int, int], tuple[int, int]]] | None = None,
 ) -> tuple[ScoredMove | None, str | None, Path]:
     source = AdbFrameSource(
         config.device_serial,
@@ -158,7 +174,7 @@ def run_turn(
             time.sleep(1.0)
             continue
         try:
-            candidate_board, candidate_move = decide_turn(candidate.png, config)
+            candidate_board, candidate_move = decide_turn(candidate.png, config, excluded_moves)
         except ValueError as error:
             last_error = error
             time.sleep(poll_seconds)
@@ -170,6 +186,7 @@ def run_turn(
     else:
         if last_error is not None:
             raise last_error
+        raise RuntimeError("no immediate scoring move found")
 
     session = output_root / datetime.now(UTC).strftime("turn-%Y%m%dT%H%M%S.%fZ")
     session.mkdir(parents=True, exist_ok=False)
@@ -190,8 +207,13 @@ def run_turn(
                 settle_seconds,
                 settle_timeout_seconds,
                 poll_seconds,
-                session,
+                session / "settlement-debug",
             )
+        except _ConfirmedNoOpError as error:
+            if config.frame_retention == "errors":
+                (session / "before.png").write_bytes(before.png)
+                render_grid_overlay(before.png, config.geometry, session / "before.overlay.png")
+            raise RejectedMoveError(selected) from error
         except Exception:
             if config.frame_retention == "errors":
                 (session / "before.png").write_bytes(before.png)
@@ -229,6 +251,7 @@ def _capture_settled(
     last_error: ValueError | None = None
     transition_started = False
     board_changed = False
+    unchanged_streak = 0
     samples: deque[tuple[Frame, dict[str, object]]] = deque(
         maxlen=_SETTLEMENT_DEBUG_FRAME_COUNT
     )
@@ -282,6 +305,15 @@ def _capture_settled(
                 previous_frame.png, frame.png, config
             )
         sample["foreground_anchor_stable"] = anchor_stable
+        if anchor_stable and _boards_equivalent_for_noop(before_board, board):
+            unchanged_streak += 1
+        else:
+            unchanged_streak = 0
+        sample["unchanged_streak"] = unchanged_streak
+        if not board_changed and unchanged_streak >= 3:
+            if debug_dir is not None:
+                _write_settlement_debug(debug_dir, samples, last_error)
+            raise _ConfirmedNoOpError("board remained unchanged after swipe")
         if (
             board_changed
             and anchor_stable
@@ -321,11 +353,26 @@ def _write_settlement_debug(
 def _board_changed_after_move(before: np.ndarray, current: np.ndarray) -> bool:
     if before.shape != current.shape:
         return True
-    differing = before != current
-    ordinary = (before < 7) & (current < 7)
-    # A successful adjacent swap changes at least two ordinary cells. A single
-    # difference can be an animated hint or recognition flicker.
-    return int(np.count_nonzero(differing & ordinary)) >= 2
+    before_colors = np.asarray(
+        [gem_color(int(label)) for label in before.flat], dtype=object
+    ).reshape(before.shape)
+    current_colors = np.asarray(
+        [gem_color(int(label)) for label in current.flat], dtype=object
+    ).reshape(current.shape)
+    known = (before_colors != None) & (current_colors != None)
+    changed = known & (before_colors != current_colors)
+    # Compare underlying colors so a special/ordinary swap counts at both cells,
+    # while effects that only change a special label remain settlement flicker.
+    return int(np.count_nonzero(changed)) >= 2
+
+
+def _boards_equivalent_for_noop(before: np.ndarray, current: np.ndarray) -> bool:
+    if before.shape != current.shape:
+        return False
+    return sum(
+        gem_color(int(before_label)) != gem_color(int(current_label))
+        for before_label, current_label in zip(before.flat, current.flat, strict=True)
+    ) <= 1
 
 
 def _boards_equivalent_for_settlement(previous: np.ndarray, current: np.ndarray) -> bool:
@@ -411,14 +458,23 @@ def run_unbounded(
             turn_number += 1
             started = time.monotonic()
             try:
-                selected, action_id, turn_session = run_turn(
-                    config,
-                    session,
-                    True,
-                    settle_seconds,
-                    settle_timeout_seconds,
-                    poll_seconds,
-                )
+                rejected_moves: set[tuple[tuple[int, int], tuple[int, int]]] = set()
+                for attempt in range(3):
+                    try:
+                        selected, action_id, turn_session = run_turn(
+                            config,
+                            session,
+                            True,
+                            settle_seconds,
+                            settle_timeout_seconds,
+                            poll_seconds,
+                            rejected_moves,
+                        )
+                        break
+                    except RejectedMoveError as error:
+                        rejected_moves.add((error.move.start, error.move.end))
+                        if attempt == 2:
+                            raise
                 if selected is None:
                     raise RuntimeError("no immediate scoring move found")
                 records.append(
