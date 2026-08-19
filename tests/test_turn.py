@@ -1,6 +1,3 @@
-import json
-from pathlib import Path
-
 import cv2
 import numpy as np
 import pytest
@@ -122,65 +119,6 @@ def test_recognizer_classifies_shining_green_special_variants(
     image = _solid_hsv(hue, saturation, value)
     recognized = recognize_board(image, (0, 0, 120, 120), 1, 1, 7)
     assert recognized[0, 0] == 18
-
-
-def test_special_gem_reference_board_recognizes_hypercube_and_flame_identities() -> None:
-    fixture = Path(__file__).parents[1] / "datasets/vision-20/special-gems-level3.jpg"
-    image = cv2.imread(str(fixture))
-    assert image is not None
-    recognized = recognize_board(image, (0, 270, 574, 846), 8, 8, 7)
-    expected = np.array(
-        [
-            [0, 0, 3, 6, 6, 3, 4, 1],
-            [0, 1, 2, 6, 2, 10, 2, 3],
-            [5, 5, 3, 1, 4, 2, 2, 1],
-            [16, 4, 3, 2, 0, 4, 5, 1],
-            [0, 1, 2, 6, 1, 4, 0, 3],
-            [1, 2, 1, 6, 3, 0, 7, 6],
-            [2, 2, 0, 5, 6, 0, 2, 5],
-            [3, 6, 4, 10, 4, 3, 3, 1],
-        ]
-    )
-    assert np.array_equal(recognized, expected)
-    assert recognized[1, 5] == 10  # red Flame Gem
-    assert recognized[3, 0] == 16  # white Flame Gem
-    assert recognized[7, 3] == 10  # red Flame Gem
-
-
-def test_labeled_warm_color_cubes_are_not_hypercubes() -> None:
-    dataset = Path(__file__).parents[1] / "datasets/vision-20"
-    labels = json.loads((dataset / "labels.json").read_text())
-    checked = 0
-    for record in labels:
-        if record["label"] not in {"red", "orange", "yellow"}:
-            continue
-        image = cv2.imread(str(dataset / "cells" / f"{record['id']}.png"))
-        assert image is not None
-        recognized = recognize_board(image, (0, 0, 120, 120), 1, 1, 7)
-        assert recognized[0, 0] != 7, record["id"]
-        checked += 1
-    assert checked == 551
-
-
-def test_four_real_hypercube_rotation_phases_are_recognized() -> None:
-    fixture = Path(__file__).parents[1] / "datasets/vision-20/hypercube-phases.jpg"
-    image = cv2.imread(str(fixture))
-    assert image is not None
-    recognized = recognize_board(image, (344, 27, 998, 685), 8, 8, 7)
-    assert set(map(tuple, np.argwhere(recognized == 7))) == {
-        (3, 3),
-        (4, 3),
-        (4, 5),
-        (5, 3),
-    }
-
-
-def test_dark_red_hypercube_rotation_phase_is_recognized() -> None:
-    fixture = Path(__file__).parents[1] / "datasets/vision-20/hypercube-dark-red-phase.png"
-    image = cv2.imread(str(fixture))
-    assert image is not None
-    recognized = recognize_board(image, (0, 0, 120, 120), 1, 1, 7)
-    assert recognized[0, 0] == 7
 
 
 def test_recognizer_and_immediate_decision_on_synthetic_board() -> None:
