@@ -92,7 +92,7 @@ def recognize_board(
                 and histogram_value < 190
             )
             flame_gem = _has_flame_effect(effect_hsv)
-            if saturation >= 70 and hypercube and (
+            if saturation >= 70 and saturated_fraction >= 0.25 and hypercube and (
                 saturated_fraction < 0.85 or significant_hue_bins <= 2
             ):
                 label = HYPERCUBE
