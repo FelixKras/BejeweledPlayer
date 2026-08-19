@@ -1,0 +1,1538 @@
+[
+  {
+    "frame_id": "turn-20260819T063730.549113Z",
+    "annotations": {
+      "google/gemini-3.7-flash": {
+        "identities": [
+          [
+            "orange",
+            "orange",
+            "green",
+            "yellow",
+            "white",
+            "blue",
+            "orange",
+            "blue"
+          ],
+          [
+            "red",
+            "blue",
+            "white",
+            "white",
+            "orange",
+            "white",
+            "red",
+            "green"
+          ],
+          [
+            "white",
+            "green",
+            "red",
+            "green",
+            "red",
+            "green",
+            "yellow",
+            "yellow"
+          ],
+          [
+            "red",
+            "yellow",
+            "purple",
+            "blue",
+            "white",
+            "orange",
+            "purple",
+            "blue"
+          ],
+          [
+            "orange",
+            "purple",
+            "green",
+            "blue",
+            "white",
+            "orange",
+            "white",
+            "red"
+          ],
+          [
+            "yellow",
+            "white",
+            "orange",
+            "orange",
+            "blue",
+            "white",
+            "blue",
+            "green"
+          ],
+          [
+            "yellow",
+            "blue",
+            "yellow",
+            "green",
+            "blue",
+            "white",
+            "green",
+            "orange"
+          ],
+          [
+            "green",
+            "green",
+            "white",
+            "blue",
+            "red",
+            "purple",
+            "blue",
+            "white"
+          ]
+        ],
+        "effects": {
+          "r5c2": "flame",
+          "r5c3": "flame",
+          "r7c3": "star",
+          "r7c7": "flame",
+          "r8c4": "flame",
+          "r8c5": "flame",
+          "r8c8": "flame"
+        }
+      },
+      "x-ai/grok-4.6": {
+        "identities": [
+          [
+            "orange",
+            "orange",
+            "green",
+            "yellow",
+            "white",
+            "blue",
+            "orange",
+            "blue"
+          ],
+          [
+            "red",
+            "blue",
+            "white",
+            "white",
+            "orange",
+            "white",
+            "red",
+            "green"
+          ],
+          [
+            "white",
+            "green",
+            "red",
+            "green",
+            "red",
+            "green",
+            "yellow",
+            "yellow"
+          ],
+          [
+            "red",
+            "yellow",
+            "purple",
+            "blue",
+            "white",
+            "orange",
+            "purple",
+            "blue"
+          ],
+          [
+            "orange",
+            "purple",
+            "green",
+            "blue",
+            "white",
+            "orange",
+            "white",
+            "red"
+          ],
+          [
+            "yellow",
+            "white",
+            "orange",
+            "orange",
+            "blue",
+            "white",
+            "blue",
+            "green"
+          ],
+          [
+            "yellow",
+            "blue",
+            "yellow",
+            "green",
+            "blue",
+            "white",
+            "green",
+            "orange"
+          ],
+          [
+            "green",
+            "green",
+            "white",
+            "blue",
+            "red",
+            "purple",
+            "blue",
+            "white"
+          ]
+        ],
+        "effects": {
+          "r5c2": "flame",
+          "r5c3": "flame",
+          "r7c3": "star",
+          "r7c7": "flame",
+          "r8c4": "flame",
+          "r8c5": "flame",
+          "r8c8": "flame"
+        }
+      }
+    },
+    "image_path": "images/turn-20260819T063730.549113Z.png"
+  },
+  {
+    "frame_id": "turn-20260819T063809.984976Z",
+    "annotations": {
+      "google/gemini-3.7-flash": {
+        "identities": [
+          [
+            "white",
+            "green",
+            "purple",
+            "white",
+            "blue",
+            "blue",
+            "orange",
+            "blue"
+          ],
+          [
+            "red",
+            "red",
+            "white",
+            "yellow",
+            "white",
+            "yellow",
+            "orange",
+            "green"
+          ],
+          [
+            "white",
+            "blue",
+            "yellow",
+            "yellow",
+            "blue",
+            "red",
+            "yellow",
+            "yellow"
+          ],
+          [
+            "red",
+            "yellow",
+            "purple",
+            "orange",
+            "white",
+            "green",
+            "purple",
+            "blue"
+          ],
+          [
+            "orange",
+            "purple",
+            "green",
+            "blue",
+            "purple",
+            "orange",
+            "white",
+            "red"
+          ],
+          [
+            "yellow",
+            "white",
+            "orange",
+            "orange",
+            "blue",
+            "white",
+            "blue",
+            "green"
+          ],
+          [
+            "yellow",
+            "blue",
+            "yellow",
+            "green",
+            "blue",
+            "white",
+            "green",
+            "orange"
+          ],
+          [
+            "green",
+            "green",
+            "white",
+            "blue",
+            "red",
+            "purple",
+            "blue",
+            "white"
+          ]
+        ],
+        "effects": {
+          "r5c2": "flame",
+          "r5c3": "flame",
+          "r5c5": "flame",
+          "r7c3": "star",
+          "r7c7": "flame",
+          "r8c4": "flame",
+          "r8c5": "flame",
+          "r8c8": "flame"
+        }
+      },
+      "x-ai/grok-4.6": {
+        "identities": [
+          [
+            "white",
+            "green",
+            "purple",
+            "white",
+            "blue",
+            "blue",
+            "orange",
+            "blue"
+          ],
+          [
+            "red",
+            "red",
+            "white",
+            "yellow",
+            "white",
+            "yellow",
+            "orange",
+            "green"
+          ],
+          [
+            "white",
+            "blue",
+            "yellow",
+            "yellow",
+            "blue",
+            "red",
+            "yellow",
+            "yellow"
+          ],
+          [
+            "red",
+            "yellow",
+            "purple",
+            "orange",
+            "white",
+            "green",
+            "purple",
+            "blue"
+          ],
+          [
+            "orange",
+            "purple",
+            "green",
+            "blue",
+            "purple",
+            "orange",
+            "white",
+            "red"
+          ],
+          [
+            "yellow",
+            "white",
+            "orange",
+            "orange",
+            "blue",
+            "white",
+            "blue",
+            "green"
+          ],
+          [
+            "yellow",
+            "blue",
+            "yellow",
+            "green",
+            "blue",
+            "white",
+            "green",
+            "orange"
+          ],
+          [
+            "green",
+            "green",
+            "white",
+            "blue",
+            "red",
+            "purple",
+            "blue",
+            "white"
+          ]
+        ],
+        "effects": {
+          "r5c2": "flame",
+          "r5c3": "flame",
+          "r5c5": "flame",
+          "r7c3": "star",
+          "r7c7": "flame",
+          "r8c4": "flame",
+          "r8c5": "flame",
+          "r8c8": "flame"
+        }
+      }
+    },
+    "image_path": "images/turn-20260819T063809.984976Z.png"
+  },
+  {
+    "frame_id": "turn-20260819T063845.287164Z",
+    "annotations": {
+      "google/gemini-3.7-flash": {
+        "identities": [
+          [
+            "white",
+            "green",
+            "white",
+            "green",
+            "green",
+            "orange",
+            "purple",
+            "blue"
+          ],
+          [
+            "red",
+            "red",
+            "blue",
+            "red",
+            "red",
+            "green",
+            "yellow",
+            "blue"
+          ],
+          [
+            "white",
+            "blue",
+            "purple",
+            "yellow",
+            "orange",
+            "green",
+            "orange",
+            "green"
+          ],
+          [
+            "red",
+            "yellow",
+            "purple",
+            "orange",
+            "blue",
+            "purple",
+            "orange",
+            "blue"
+          ],
+          [
+            "orange",
+            "purple",
+            "green",
+            "purple",
+            "yellow",
+            "green",
+            "purple",
+            "red"
+          ],
+          [
+            "yellow",
+            "white",
+            "orange",
+            "orange",
+            "blue",
+            "red",
+            "orange",
+            "green"
+          ],
+          [
+            "yellow",
+            "blue",
+            "yellow",
+            "green",
+            "white",
+            "green",
+            "green",
+            "orange"
+          ],
+          [
+            "green",
+            "green",
+            "white",
+            "blue",
+            "red",
+            "purple",
+            "blue",
+            "white"
+          ]
+        ],
+        "effects": {
+          "r5c2": "flame",
+          "r5c3": "flame",
+          "r5c4": "flame",
+          "r7c3": "star",
+          "r7c7": "flame",
+          "r8c4": "flame",
+          "r8c5": "flame",
+          "r8c8": "flame"
+        }
+      },
+      "x-ai/grok-4.6": {
+        "identities": [
+          [
+            "white",
+            "green",
+            "white",
+            "green",
+            "green",
+            "orange",
+            "purple",
+            "blue"
+          ],
+          [
+            "red",
+            "red",
+            "blue",
+            "red",
+            "red",
+            "green",
+            "yellow",
+            "blue"
+          ],
+          [
+            "white",
+            "blue",
+            "purple",
+            "yellow",
+            "orange",
+            "green",
+            "orange",
+            "green"
+          ],
+          [
+            "red",
+            "yellow",
+            "purple",
+            "orange",
+            "blue",
+            "purple",
+            "orange",
+            "blue"
+          ],
+          [
+            "orange",
+            "purple",
+            "green",
+            "purple",
+            "yellow",
+            "green",
+            "purple",
+            "red"
+          ],
+          [
+            "yellow",
+            "white",
+            "orange",
+            "orange",
+            "blue",
+            "red",
+            "orange",
+            "green"
+          ],
+          [
+            "yellow",
+            "blue",
+            "yellow",
+            "green",
+            "white",
+            "green",
+            "green",
+            "orange"
+          ],
+          [
+            "green",
+            "green",
+            "white",
+            "blue",
+            "red",
+            "purple",
+            "blue",
+            "white"
+          ]
+        ],
+        "effects": {
+          "r5c2": "flame",
+          "r5c3": "flame",
+          "r5c4": "flame",
+          "r7c3": "star",
+          "r7c7": "flame",
+          "r8c4": "flame",
+          "r8c5": "flame",
+          "r8c8": "flame"
+        }
+      }
+    },
+    "image_path": "images/turn-20260819T063845.287164Z.png"
+  },
+  {
+    "frame_id": "turn-20260819T063917.628325Z",
+    "annotations": {
+      "google/gemini-3.7-flash": {
+        "identities": [
+          [
+            "orange",
+            "purple",
+            "green",
+            "green",
+            "purple",
+            "yellow",
+            "orange",
+            "white"
+          ],
+          [
+            "blue",
+            "green",
+            "orange",
+            "red",
+            "white",
+            "yellow",
+            "white",
+            "red"
+          ],
+          [
+            "green",
+            "blue",
+            "yellow",
+            "white",
+            "green",
+            "purple",
+            "orange",
+            "red"
+          ],
+          [
+            "white",
+            "yellow",
+            "purple",
+            "purple",
+            "blue",
+            "red",
+            "white",
+            "white"
+          ],
+          [
+            "red",
+            "purple",
+            "purple",
+            "yellow",
+            "yellow",
+            "green",
+            "green",
+            "blue"
+          ],
+          [
+            "yellow",
+            "white",
+            "green",
+            "purple",
+            "blue",
+            "green",
+            "white",
+            "blue"
+          ],
+          [
+            "yellow",
+            "blue",
+            "yellow",
+            "green",
+            "white",
+            "purple",
+            "purple",
+            "green"
+          ],
+          [
+            "green",
+            "green",
+            "white",
+            "blue",
+            "red",
+            "green",
+            "yellow",
+            "blue"
+          ]
+        ],
+        "effects": {
+          "r4c1": "flame",
+          "r5c2": "flame",
+          "r6c3": "flame",
+          "r6c4": "flame",
+          "r7c3": "star",
+          "r8c4": "flame",
+          "r8c5": "flame"
+        }
+      },
+      "x-ai/grok-4.6": {
+        "identities": [
+          [
+            "orange",
+            "purple",
+            "green",
+            "green",
+            "purple",
+            "yellow",
+            "orange",
+            "white"
+          ],
+          [
+            "blue",
+            "green",
+            "orange",
+            "red",
+            "white",
+            "yellow",
+            "white",
+            "red"
+          ],
+          [
+            "green",
+            "blue",
+            "yellow",
+            "white",
+            "green",
+            "purple",
+            "orange",
+            "red"
+          ],
+          [
+            "white",
+            "yellow",
+            "purple",
+            "purple",
+            "blue",
+            "red",
+            "white",
+            "white"
+          ],
+          [
+            "red",
+            "purple",
+            "purple",
+            "yellow",
+            "yellow",
+            "green",
+            "green",
+            "blue"
+          ],
+          [
+            "yellow",
+            "white",
+            "green",
+            "purple",
+            "blue",
+            "green",
+            "white",
+            "blue"
+          ],
+          [
+            "yellow",
+            "blue",
+            "yellow",
+            "green",
+            "white",
+            "purple",
+            "purple",
+            "green"
+          ],
+          [
+            "green",
+            "green",
+            "white",
+            "blue",
+            "red",
+            "green",
+            "yellow",
+            "blue"
+          ]
+        ],
+        "effects": {
+          "r4c1": "flame",
+          "r5c2": "flame",
+          "r6c3": "flame",
+          "r6c4": "flame",
+          "r7c3": "star",
+          "r8c4": "flame",
+          "r8c5": "flame"
+        }
+      }
+    },
+    "image_path": "images/turn-20260819T063917.628325Z.png"
+  },
+  {
+    "frame_id": "turn-20260819T063958.061537Z",
+    "annotations": {
+      "google/gemini-3.7-flash": {
+        "identities": [
+          [
+            "red",
+            "yellow",
+            "white",
+            "purple",
+            "green",
+            "red",
+            "green",
+            "yellow"
+          ],
+          [
+            "white",
+            "green",
+            "green",
+            "red",
+            "purple",
+            "blue",
+            "green",
+            "purple"
+          ],
+          [
+            "red",
+            "yellow",
+            "blue",
+            "white",
+            "green",
+            "yellow",
+            "orange",
+            "orange"
+          ],
+          [
+            "orange",
+            "white",
+            "orange",
+            "yellow",
+            "green",
+            "purple",
+            "white",
+            "white"
+          ],
+          [
+            "blue",
+            "purple",
+            "purple",
+            "white",
+            "blue",
+            "yellow",
+            "green",
+            "red"
+          ],
+          [
+            "yellow",
+            "white",
+            "green",
+            "purple",
+            "blue",
+            "purple",
+            "white",
+            "red"
+          ],
+          [
+            "yellow",
+            "blue",
+            "yellow",
+            "green",
+            "white",
+            "red",
+            "purple",
+            "white"
+          ],
+          [
+            "green",
+            "green",
+            "white",
+            "blue",
+            "red",
+            "purple",
+            "yellow",
+            "green"
+          ]
+        ],
+        "effects": {
+          "r5c6": "star",
+          "r6c3": "flame",
+          "r6c4": "flame",
+          "r7c3": "star",
+          "r8c4": "flame",
+          "r8c5": "flame"
+        }
+      },
+      "x-ai/grok-4.6": {
+        "identities": [
+          [
+            "red",
+            "yellow",
+            "white",
+            "purple",
+            "green",
+            "red",
+            "green",
+            "yellow"
+          ],
+          [
+            "white",
+            "green",
+            "green",
+            "red",
+            "purple",
+            "blue",
+            "green",
+            "purple"
+          ],
+          [
+            "red",
+            "yellow",
+            "blue",
+            "white",
+            "green",
+            "yellow",
+            "orange",
+            "orange"
+          ],
+          [
+            "orange",
+            "white",
+            "orange",
+            "yellow",
+            "green",
+            "purple",
+            "white",
+            "white"
+          ],
+          [
+            "blue",
+            "purple",
+            "purple",
+            "white",
+            "blue",
+            "yellow",
+            "green",
+            "red"
+          ],
+          [
+            "yellow",
+            "white",
+            "green",
+            "purple",
+            "blue",
+            "purple",
+            "white",
+            "red"
+          ],
+          [
+            "yellow",
+            "blue",
+            "yellow",
+            "green",
+            "white",
+            "red",
+            "purple",
+            "white"
+          ],
+          [
+            "green",
+            "green",
+            "white",
+            "blue",
+            "red",
+            "purple",
+            "yellow",
+            "green"
+          ]
+        ],
+        "effects": {
+          "r5c6": "star",
+          "r6c3": "flame",
+          "r6c4": "flame",
+          "r8c4": "flame",
+          "r8c5": "flame"
+        }
+      }
+    },
+    "image_path": "images/turn-20260819T063958.061537Z.png"
+  },
+  {
+    "frame_id": "turn-20260819T064028.310041Z",
+    "annotations": {
+      "google/gemini-3.7-flash": {
+        "identities": [
+          [
+            "red",
+            "purple",
+            "purple",
+            "white",
+            "white",
+            "blue",
+            "green",
+            "yellow"
+          ],
+          [
+            "white",
+            "yellow",
+            "white",
+            "red",
+            "purple",
+            "red",
+            "green",
+            "purple"
+          ],
+          [
+            "red",
+            "yellow",
+            "blue",
+            "red",
+            "green",
+            "yellow",
+            "orange",
+            "orange"
+          ],
+          [
+            "orange",
+            "white",
+            "orange",
+            "yellow",
+            "purple",
+            "purple",
+            "white",
+            "white"
+          ],
+          [
+            "blue",
+            "purple",
+            "purple",
+            "white",
+            "blue",
+            "yellow",
+            "green",
+            "red"
+          ],
+          [
+            "yellow",
+            "white",
+            "green",
+            "purple",
+            "blue",
+            "purple",
+            "white",
+            "red"
+          ],
+          [
+            "yellow",
+            "blue",
+            "yellow",
+            "green",
+            "white",
+            "red",
+            "purple",
+            "white"
+          ],
+          [
+            "green",
+            "green",
+            "white",
+            "blue",
+            "red",
+            "purple",
+            "yellow",
+            "green"
+          ]
+        ],
+        "effects": {
+          "r1c4": "flame",
+          "r2c4": "flame",
+          "r5c6": "star",
+          "r6c3": "flame",
+          "r6c4": "flame",
+          "r7c3": "star",
+          "r8c4": "flame",
+          "r8c5": "flame"
+        }
+      },
+      "x-ai/grok-4.6": {
+        "identities": [
+          [
+            "red",
+            "purple",
+            "purple",
+            "white",
+            "white",
+            "blue",
+            "green",
+            "yellow"
+          ],
+          [
+            "white",
+            "yellow",
+            "white",
+            "red",
+            "purple",
+            "red",
+            "green",
+            "purple"
+          ],
+          [
+            "red",
+            "yellow",
+            "blue",
+            "red",
+            "green",
+            "yellow",
+            "orange",
+            "orange"
+          ],
+          [
+            "orange",
+            "white",
+            "orange",
+            "yellow",
+            "purple",
+            "purple",
+            "white",
+            "white"
+          ],
+          [
+            "blue",
+            "purple",
+            "purple",
+            "white",
+            "blue",
+            "yellow",
+            "green",
+            "red"
+          ],
+          [
+            "yellow",
+            "white",
+            "green",
+            "purple",
+            "blue",
+            "purple",
+            "white",
+            "red"
+          ],
+          [
+            "yellow",
+            "blue",
+            "yellow",
+            "green",
+            "white",
+            "red",
+            "purple",
+            "white"
+          ],
+          [
+            "green",
+            "green",
+            "white",
+            "blue",
+            "red",
+            "purple",
+            "yellow",
+            "green"
+          ]
+        ],
+        "effects": {
+          "r1c4": "flame",
+          "r2c4": "flame",
+          "r5c6": "star",
+          "r6c3": "flame",
+          "r6c4": "flame",
+          "r7c3": "star",
+          "r8c4": "flame",
+          "r8c5": "flame"
+        }
+      }
+    },
+    "image_path": "images/turn-20260819T064028.310041Z.png"
+  },
+  {
+    "frame_id": "turn-20260819T064059.758481Z",
+    "annotations": {
+      "google/gemini-3.7-flash": {
+        "identities": [
+          [
+            "red",
+            "white",
+            "green",
+            "white",
+            "orange",
+            "blue",
+            "green",
+            "yellow"
+          ],
+          [
+            "white",
+            "purple",
+            "red",
+            "green",
+            "white",
+            "blue",
+            "green",
+            "purple"
+          ],
+          [
+            "red",
+            "yellow",
+            "red",
+            "white",
+            "yellow",
+            "red",
+            "orange",
+            "orange"
+          ],
+          [
+            "orange",
+            "white",
+            "orange",
+            "green",
+            "purple",
+            "purple",
+            "white",
+            "white"
+          ],
+          [
+            "blue",
+            "purple",
+            "purple",
+            "white",
+            "blue",
+            "yellow",
+            "green",
+            "red"
+          ],
+          [
+            "yellow",
+            "white",
+            "green",
+            "purple",
+            "blue",
+            "purple",
+            "white",
+            "red"
+          ],
+          [
+            "yellow",
+            "blue",
+            "yellow",
+            "green",
+            "white",
+            "red",
+            "purple",
+            "white"
+          ],
+          [
+            "green",
+            "green",
+            "white",
+            "blue",
+            "red",
+            "purple",
+            "yellow",
+            "green"
+          ]
+        ],
+        "effects": {
+          "r5c6": "star",
+          "r6c3": "flame",
+          "r6c4": "flame",
+          "r7c3": "star",
+          "r8c4": "flame",
+          "r8c5": "flame"
+        }
+      },
+      "x-ai/grok-4.6": {
+        "identities": [
+          [
+            "red",
+            "white",
+            "green",
+            "white",
+            "orange",
+            "blue",
+            "green",
+            "yellow"
+          ],
+          [
+            "white",
+            "purple",
+            "red",
+            "green",
+            "white",
+            "blue",
+            "green",
+            "purple"
+          ],
+          [
+            "red",
+            "yellow",
+            "red",
+            "white",
+            "yellow",
+            "red",
+            "orange",
+            "orange"
+          ],
+          [
+            "orange",
+            "white",
+            "orange",
+            "green",
+            "purple",
+            "purple",
+            "white",
+            "white"
+          ],
+          [
+            "blue",
+            "purple",
+            "purple",
+            "white",
+            "blue",
+            "yellow",
+            "green",
+            "red"
+          ],
+          [
+            "yellow",
+            "white",
+            "green",
+            "purple",
+            "blue",
+            "purple",
+            "white",
+            "red"
+          ],
+          [
+            "yellow",
+            "blue",
+            "yellow",
+            "green",
+            "white",
+            "red",
+            "purple",
+            "white"
+          ],
+          [
+            "green",
+            "green",
+            "white",
+            "blue",
+            "red",
+            "purple",
+            "yellow",
+            "green"
+          ]
+        ],
+        "effects": {
+          "r5c6": "star",
+          "r6c3": "flame",
+          "r6c4": "flame",
+          "r7c3": "star",
+          "r8c4": "flame",
+          "r8c5": "flame"
+        }
+      }
+    },
+    "image_path": "images/turn-20260819T064059.758481Z.png"
+  },
+  {
+    "frame_id": "turn-20260819T064138.621402Z",
+    "annotations": {
+      "google/gemini-3.7-flash": {
+        "identities": [
+          [
+            "orange",
+            "green",
+            "red",
+            "red",
+            "blue",
+            "purple",
+            "blue",
+            "orange"
+          ],
+          [
+            "red",
+            "white",
+            "green",
+            "yellow",
+            "green",
+            "purple",
+            "orange",
+            "yellow"
+          ],
+          [
+            "white",
+            "purple",
+            "red",
+            "blue",
+            "yellow",
+            "blue",
+            "green",
+            "yellow"
+          ],
+          [
+            "red",
+            "yellow",
+            "red",
+            "green",
+            "red",
+            "purple",
+            "green",
+            "purple"
+          ],
+          [
+            "orange",
+            "white",
+            "orange",
+            "yellow",
+            "blue",
+            "hypercube",
+            "orange",
+            "orange"
+          ],
+          [
+            "yellow",
+            "white",
+            "green",
+            "purple",
+            "blue",
+            "green",
+            "white",
+            "red"
+          ],
+          [
+            "yellow",
+            "blue",
+            "yellow",
+            "green",
+            "white",
+            "yellow",
+            "purple",
+            "white"
+          ],
+          [
+            "green",
+            "green",
+            "white",
+            "blue",
+            "red",
+            "orange",
+            "yellow",
+            "green"
+          ]
+        ],
+        "effects": {
+          "r5c6": "hypercube",
+          "r6c3": "flame",
+          "r6c4": "flame",
+          "r6c5": "flame",
+          "r7c3": "star",
+          "r8c4": "flame",
+          "r8c5": "flame"
+        }
+      },
+      "x-ai/grok-4.6": {
+        "identities": [
+          [
+            "orange",
+            "green",
+            "red",
+            "red",
+            "blue",
+            "purple",
+            "blue",
+            "orange"
+          ],
+          [
+            "red",
+            "white",
+            "green",
+            "yellow",
+            "green",
+            "purple",
+            "orange",
+            "yellow"
+          ],
+          [
+            "white",
+            "purple",
+            "red",
+            "blue",
+            "yellow",
+            "blue",
+            "green",
+            "yellow"
+          ],
+          [
+            "red",
+            "yellow",
+            "red",
+            "green",
+            "red",
+            "purple",
+            "green",
+            "purple"
+          ],
+          [
+            "orange",
+            "white",
+            "orange",
+            "yellow",
+            "blue",
+            "hypercube",
+            "orange",
+            "orange"
+          ],
+          [
+            "yellow",
+            "white",
+            "green",
+            "purple",
+            "blue",
+            "green",
+            "white",
+            "red"
+          ],
+          [
+            "yellow",
+            "blue",
+            "yellow",
+            "green",
+            "white",
+            "yellow",
+            "purple",
+            "white"
+          ],
+          [
+            "green",
+            "green",
+            "white",
+            "blue",
+            "red",
+            "orange",
+            "yellow",
+            "green"
+          ]
+        ],
+        "effects": {
+          "r5c6": "hypercube",
+          "r6c3": "flame",
+          "r6c5": "flame",
+          "r7c3": "star",
+          "r8c4": "flame",
+          "r8c5": "flame"
+        }
+      }
+    },
+    "image_path": "images/turn-20260819T064138.621402Z.png"
+  }
+]

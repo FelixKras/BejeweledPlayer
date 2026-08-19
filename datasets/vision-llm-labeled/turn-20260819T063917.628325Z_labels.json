@@ -1,0 +1,188 @@
+{
+  "google/gemini-3.7-flash": {
+    "identities": [
+      [
+        "orange",
+        "purple",
+        "green",
+        "green",
+        "purple",
+        "yellow",
+        "orange",
+        "white"
+      ],
+      [
+        "blue",
+        "green",
+        "orange",
+        "red",
+        "white",
+        "yellow",
+        "white",
+        "red"
+      ],
+      [
+        "green",
+        "blue",
+        "yellow",
+        "white",
+        "green",
+        "purple",
+        "orange",
+        "red"
+      ],
+      [
+        "white",
+        "yellow",
+        "purple",
+        "purple",
+        "blue",
+        "red",
+        "white",
+        "white"
+      ],
+      [
+        "red",
+        "purple",
+        "purple",
+        "yellow",
+        "yellow",
+        "green",
+        "green",
+        "blue"
+      ],
+      [
+        "yellow",
+        "white",
+        "green",
+        "purple",
+        "blue",
+        "green",
+        "white",
+        "blue"
+      ],
+      [
+        "yellow",
+        "blue",
+        "yellow",
+        "green",
+        "white",
+        "purple",
+        "purple",
+        "green"
+      ],
+      [
+        "green",
+        "green",
+        "white",
+        "blue",
+        "red",
+        "green",
+        "yellow",
+        "blue"
+      ]
+    ],
+    "effects": {
+      "r4c1": "flame",
+      "r5c2": "flame",
+      "r6c3": "flame",
+      "r6c4": "flame",
+      "r7c3": "star",
+      "r8c4": "flame",
+      "r8c5": "flame"
+    }
+  },
+  "x-ai/grok-4.6": {
+    "identities": [
+      [
+        "orange",
+        "purple",
+        "green",
+        "green",
+        "purple",
+        "yellow",
+        "orange",
+        "white"
+      ],
+      [
+        "blue",
+        "green",
+        "orange",
+        "red",
+        "white",
+        "yellow",
+        "white",
+        "red"
+      ],
+      [
+        "green",
+        "blue",
+        "yellow",
+        "white",
+        "green",
+        "purple",
+        "orange",
+        "red"
+      ],
+      [
+        "white",
+        "yellow",
+        "purple",
+        "purple",
+        "blue",
+        "red",
+        "white",
+        "white"
+      ],
+      [
+        "red",
+        "purple",
+        "purple",
+        "yellow",
+        "yellow",
+        "green",
+        "green",
+        "blue"
+      ],
+      [
+        "yellow",
+        "white",
+        "green",
+        "purple",
+        "blue",
+        "green",
+        "white",
+        "blue"
+      ],
+      [
+        "yellow",
+        "blue",
+        "yellow",
+        "green",
+        "white",
+        "purple",
+        "purple",
+        "green"
+      ],
+      [
+        "green",
+        "green",
+        "white",
+        "blue",
+        "red",
+        "green",
+        "yellow",
+        "blue"
+      ]
+    ],
+    "effects": {
+      "r4c1": "flame",
+      "r5c2": "flame",
+      "r6c3": "flame",
+      "r6c4": "flame",
+      "r7c3": "star",
+      "r8c4": "flame",
+      "r8c5": "flame"
+    }
+  }
+}
