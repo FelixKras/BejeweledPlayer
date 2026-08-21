@@ -5,10 +5,12 @@ from bejeweled_player.domain import Coordinate, Move
 from bejeweled_player.interfaces import BoardGeometry
 
 
-def test_action_sink_builds_one_calibrated_swipe_command() -> None:
-    commands = []
+from collections.abc import Sequence
 
-    def runner(command, timeout):
+def test_action_sink_builds_one_calibrated_swipe_command() -> None:
+    commands: list[tuple[Sequence[str], float]] = []
+
+    def runner(command: Sequence[str], timeout: float) -> subprocess.CompletedProcess[bytes]:
         commands.append((command, timeout))
         return subprocess.CompletedProcess(command, 0, b"", b"")
 
@@ -39,9 +41,9 @@ def test_action_sink_builds_one_calibrated_swipe_command() -> None:
 
 
 def test_action_sink_builds_tap_command() -> None:
-    commands = []
+    commands: list[tuple[Sequence[str], float]] = []
 
-    def runner(command, timeout):
+    def runner(command: Sequence[str], timeout: float) -> subprocess.CompletedProcess[bytes]:
         commands.append((command, timeout))
         return subprocess.CompletedProcess(command, 0, b"", b"")
 

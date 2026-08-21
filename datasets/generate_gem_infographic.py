@@ -77,7 +77,7 @@ def main() -> None:
             bar_width = 14
             x = chart_x + bin_index * bar_width
             bar_height = round(value * 175)
-            color = cv2.cvtColor(np.uint8([[[bin_index * 10 + 5, 225, 235]]]), cv2.COLOR_HSV2BGR)[
+            color = cv2.cvtColor(np.array([[[bin_index * 10 + 5, 225, 235]]], dtype=np.uint8), cv2.COLOR_HSV2BGR)[
                 0, 0
             ].tolist()
             cv2.rectangle(

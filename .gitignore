@@ -5,3 +5,4 @@ __pycache__/
 debug/
 sessions/
 .memory-plane/memory.db
+*.log

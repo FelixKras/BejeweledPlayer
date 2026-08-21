@@ -24,6 +24,8 @@ for record in LLM_DATASET:
 
     img_path = Path("datasets/vision-llm-labeled") / record["image_path"]
     image = cv2.imread(str(img_path))
+    if image is None:
+        continue
     recognized = recognize_board(image, (0, 448, 960, 1408), 8, 8, 7)
 
     gemini = record["annotations"]["google/gemini-3.7-flash"]
@@ -46,7 +48,7 @@ for record in LLM_DATASET:
                     print(f"\nFrame: {record['frame_id']} | Cell: r{r + 1}c{c + 1}")
                     print(f"LLM Consensus : {g1.upper()}")
                     print(
-                        f"Recognizer    : {INV_COLOR_LABELS.get(actual_color_int, 'unknown').upper()}"
+                        f"Recognizer    : {INV_COLOR_LABELS.get(actual_color_int, 'unknown').upper() if actual_color_int is not None else 'UNKNOWN'}"
                     )
 
                     x = round((c + 0.5) * crop.shape[1] / cols)

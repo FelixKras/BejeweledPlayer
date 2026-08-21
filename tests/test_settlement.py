@@ -1,3 +1,4 @@
+from pathlib import Path
 from collections import deque
 
 import cv2
@@ -129,8 +130,8 @@ def test_foreground_anchor_rejects_screen_transition() -> None:
     assert foreground_change_fraction(_png(previous), _png(current), _config()) > 0.08
 
 
-def test_settlement_debug_writes_only_the_last_five_frames(tmp_path) -> None:
-    frames = deque(
+def test_settlement_debug_writes_only_the_last_five_frames(tmp_path: Path) -> None:
+    frames: deque[tuple[Frame, dict[str, object]]] = deque(
         (
             (
                 Frame(

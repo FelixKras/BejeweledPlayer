@@ -7,12 +7,14 @@ import pytest
 from bejeweled_player.adb import AdbDevice, AdbError, AdbFrameSource, list_devices
 
 
-def completed(stdout: bytes = b"", stderr: bytes = b"", code: int = 0):
+from collections.abc import Sequence
+
+def completed(stdout: bytes = b"", stderr: bytes = b"", code: int = 0) -> subprocess.CompletedProcess[bytes]:
     return subprocess.CompletedProcess(["adb"], code, stdout, stderr)
 
 
 def test_device_listing_parses_state_and_details() -> None:
-    def runner(command, timeout):
+    def runner(command: Sequence[str], timeout: float) -> subprocess.CompletedProcess[bytes]:
         return completed(
             b"List of devices attached\n192.168.1.8:5555 device product:test model:Phone\n"
         )

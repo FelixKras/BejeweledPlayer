@@ -69,7 +69,7 @@ def main() -> None:
                 height = round(value * 900)
                 low_height = round(low[index] * 900)
                 high_height = round(high[index] * 900)
-                color = cv2.cvtColor(np.uint8([[[index * 10 + 5, 230, 230]]]), cv2.COLOR_HSV2BGR)[
+                color = cv2.cvtColor(np.array([[[index * 10 + 5, 230, 230]]], dtype=np.uint8), cv2.COLOR_HSV2BGR)[
                     0, 0
                 ].tolist()
                 cv2.rectangle(

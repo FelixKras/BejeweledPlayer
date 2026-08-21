@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 
+from typing import Any
 import cv2
 import numpy as np
 import pytest
@@ -27,7 +28,7 @@ LABELED_GEMS = json.loads((DATASET / "labels.json").read_text())
 
 
 @pytest.mark.parametrize("record", LABELED_GEMS, ids=lambda record: record["id"])
-def test_all_labeled_gem_identities(record: dict[str, object]) -> None:
+def test_all_labeled_gem_identities(record: dict[str, Any]) -> None:
     image = cv2.imread(str(DATASET / "cells" / f"{record['id']}.png"))
     assert image is not None
 
@@ -97,7 +98,7 @@ KNOWN_FAILURES = {
 
 
 @pytest.mark.parametrize("record", LLM_DATASET, ids=lambda r: r["frame_id"])
-def test_llm_consensus_board_recognition(record: dict[str, object]) -> None:
+def test_llm_consensus_board_recognition(record: dict[str, Any]) -> None:
     if record["frame_id"] in KNOWN_FAILURES:
         pytest.xfail("Known yellow/orange hue boundary classification failures")
 
