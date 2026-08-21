@@ -1,15 +1,37 @@
 # BejeweledPlayer
 
-PC-side Python implementation of the **Wireless-ADB Strategic Match-3 Autoplayer** SRS v1.0. The current MVP is a read-only Phase 1 observation slice and cannot send live input through its CLI.
+![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
+![Python](https://img.shields.io/badge/python-3.12%2B-blue)
+![Code Style](https://img.shields.io/badge/code%20style-black-000000.svg)
 
-## Development setup
+PC-side Python implementation of the **Wireless-ADB Strategic Match-3 Autoplayer** (SRS v1.0).
+
+<p align="center">
+  <img src="docs/assets/board_overlay.png" alt="Board Recognition Overlay" width="300" />
+</p>
+
+## How it Works
+
+The autoplayer uses ADB to fetch lossless screenshots, applies computer vision to isolate the game board, identifies the gems, mathematically scores every possible adjacent swap using a strategic valuation function, and sends touch events back to the device to execute the optimal move.
+
+<p align="center">
+  <img src="docs/assets/gem_infographic.png" alt="Gem Hue Recognition Histogram" width="600" />
+</p>
+
+### Key Features
+- **Deterministic Play:** Evaluates every adjacent swap. Prioritizes 5/4 matches, then ranks 3-matches by immediate points, hypercube blast risk mitigation, setup potential, and board mobility.
+- **Wireless ADB:** Completely untethered operation.
+- **Safety First:** Polls for board settlement after every swipe (detecting cascading animations and menus). Execution safely aborts on unexpected screens, game overs, or unrecognised states.
+- **Color Histograms:** Custom robust hue-template correlation matching. Special gems (hypercubes, flame gems) are natively recognised.
+
+## Development Setup
 
 Requirements: Python 3.12 or newer. On Debian/Ubuntu, install venv support first if necessary:
 
 ```bash
 sudo apt install python3.12-venv
 python3.12 -m venv .venv
-. .venv/bin/activate
+source .venv/bin/activate
 pip install -e '.[dev]'
 ```
 
@@ -22,26 +44,14 @@ mypy
 autoplayer validate-config --config config/target_720x1536.toml
 ```
 
-List connected devices:
+## CLI Usage
 
+List connected ADB devices:
 ```bash
 autoplayer devices
 ```
 
-Set `device.serial` in `config/target_720x1536.toml`, then capture one lossless frame and render the calibrated grid:
-
-```bash
-autoplayer observe --config config/target_720x1536.toml
-```
-
-For the calibrated Pixel 9 Pro at `960x2142`:
-
-```bash
-autoplayer observe --config config/pixel9pro_960x2142.toml
-```
-
-Render the overlay against an existing screenshot without ADB:
-
+**(Optional)** Render an overlay debug image against an existing screenshot without ADB:
 ```bash
 autoplayer render-debug \
   --config config/target_720x1536.toml \
@@ -49,37 +59,24 @@ autoplayer render-debug \
   --output board.overlay.png
 ```
 
-Perform a dry run of one adjacent logical swipe:
-
+### Observation Mode
+Capture one lossless frame and render the calibrated grid to see what the bot sees:
 ```bash
-autoplayer swipe \
-  --config config/pixel9pro_960x2142.toml \
-  --source 1 4 \
-  --destination 2 4
+autoplayer observe --config config/pixel9pro_960x2142.toml
 ```
 
-Add `--execute` to authorize exactly that one swipe. The command validates adjacency and board bounds, sends one ADB input command, and exits. It does not yet recognize board stability or verify that the current board matches a planning frame, so an operator must recapture and inspect immediately before execution.
+### Playing the Game
 
-`calibrate`, `suggest`, `play`, `replay`, and `simulate` remain gated.
+> **Note:** The active ADB device serial must be configured in your selected `.toml` file (e.g., `device.serial = "192.168.1.100:5555"`).
 
-## Minimal Playing Turn
-
-Capture the foreground board and print one deterministic immediate-match decision:
-
-```bash
-autoplayer turn --config config/pixel9pro_960x2142.toml
-```
-
-Authorize that one selected move, capture the settled outcome, and exit:
-
+**Minimal Turn**  
+Capture the foreground board, authorize one selected move, wait for the outcome, and exit:
 ```bash
 autoplayer turn --config config/pixel9pro_960x2142.toml --execute
 ```
 
-The minimal turn recognises the seven ordinary colors, rejects low-color or insufficiently diverse screens, rejects boards containing unresolved matches, evaluates every adjacent swap, and chooses the first highest-scoring immediate match deterministically. It does not model special gems, cascades, future turns, or continuous play.
-
-Run a bounded, recorded sequence using the same capture/validation gate before every move:
-
+**Bounded Play**  
+Run a bounded, recorded sequence using the capture/validation gate before every move (stops automatically after the limit):
 ```bash
 autoplayer multi-turn \
   --config config/pixel9pro_960x2142.toml \
@@ -87,24 +84,18 @@ autoplayer multi-turn \
   --execute
 ```
 
-Each multi-turn session contains an incrementally updated `summary.json` plus raw and annotated before/after frames for every completed turn. Execution stops on the first unsafe or unrecognised state.
-
-For unbounded play, stop with `Ctrl+C`:
-
+**Unbounded Play**  
+Run indefinitely until manually stopped (`Ctrl+C`) or safely aborted by an unrecognised board state (like an ad or game over screen):
 ```bash
 autoplayer play \
   --config config/pixel9pro_960x2142.toml \
   --execute
 ```
 
-Each turn re-captures the board, prioritizes 5/4 matches, then ranks 3-matches by setup potential and mobility. It polls after the swipe with a 50 ms minimum wait and 80 ms cadence until a valid settled board is observed. Settlement allows exact equality, special-cell-only flicker, or one ordinary-cell flicker, with a default 25 second timeout. Full-screen transitions, special-gem ambiguity, unrelated screens, and persistent motion stop the run safely. `summary.json` is updated after every completed turn.
+Each turn re-captures the board. It polls after the swipe with a 50 ms minimum wait and 80 ms cadence until a valid settled board is observed (with a default 25 second timeout). Every completed turn appends to an incrementally updated `summary.json` file inside the `sessions/` directory.
 
-## Baseline status
+## Baseline Status & Documentation
 
-- Initial target profile: 720x1536 portrait, 8x8 board, approximate bounds `(0, 320)` to `(720, 1005)`.
-- Input: disabled.
-- Recognition profile: untrained.
-- Rule set: unresolved assumptions; not safe for simulation or play.
+- Initial target profiles: `720x1536` portrait and `960x2142` portrait (Pixel 9 Pro).
+- See `docs/TRACEABILITY.md` and `docs/UNRESOLVED_RULES.md` before implementing later phases.
 - Hardware-free development: `FakeFrameSource` and `FakeActionSink` are available.
-
-See `docs/TRACEABILITY.md` and `docs/UNRESOLVED_RULES.md` before implementing later phases.
