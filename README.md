@@ -18,6 +18,13 @@ The autoplayer uses ADB to fetch lossless screenshots, applies computer vision t
   <img src="docs/assets/gem-histogram-infographic.png" alt="Gem Hue Recognition Histogram" width="600" />
 </p>
 
+### Detection Algorithm
+
+The autoplayer uses a highly deterministic, heuristic computer vision pipeline (bypassing the need for heavy neural networks):
+1. **Grid Isolation:** Crops the lossless ADB screenshot to the exact board coordinates defined in the configuration and slices it into an 8x8 grid.
+2. **Hue Correlation:** Extracts the center pixels of each cell, filters for high color saturation, and generates an HSV hue histogram. The gem's color is then identified by matching this histogram against predefined correlation templates (Red, Green, Blue, Yellow, Purple, Orange, White).
+3. **Special Gems:** Multicolored *Hypercubes* are identified by checking for secondary hue family thresholds inside the gem body. *Flame* gems preserve their underlying base color but are flagged by detecting intense brightness values along their exterior boundaries.
+
 ### Key Features
 - **Deterministic Play:** Evaluates every adjacent swap. Prioritizes 5/4 matches, then ranks 3-matches by immediate points, hypercube blast risk mitigation, setup potential, and board mobility.
 - **Wireless ADB:** Completely untethered operation.
