@@ -15,7 +15,7 @@ PC-side Python implementation of the **Wireless-ADB Strategic Match-3 Autoplayer
 The autoplayer uses ADB to fetch lossless screenshots, applies computer vision to isolate the game board, identifies the gems, mathematically scores every possible adjacent swap using a strategic valuation function, and sends touch events back to the device to execute the optimal move.
 
 <p align="center">
-  <img src="docs/assets/gem_infographic.png" alt="Gem Hue Recognition Histogram" width="600" />
+  <img src="docs/assets/gem-histogram-infographic.png" alt="Gem Hue Recognition Histogram" width="600" />
 </p>
 
 ### Key Features
@@ -96,6 +96,8 @@ Each turn re-captures the board. It polls after the swipe with a 50 ms minimum w
 
 ## Baseline Status & Documentation
 
+- **Full SRS:** See the complete Software Requirements Specification in [`docs/Bejeweled_ADB_Autoplayer_SRS.md`](docs/Bejeweled_ADB_Autoplayer_SRS.md).
+- **Vision Data:** Labeled boards used for recognition tests and calibration are located in [`datasets/vision-20/`](datasets/vision-20/) and [`datasets/vision-llm-labeled/`](datasets/vision-llm-labeled/).
 - Initial target profiles: `720x1536` portrait and `960x2142` portrait (Pixel 9 Pro).
-- See `docs/TRACEABILITY.md` and `docs/UNRESOLVED_RULES.md` before implementing later phases.
+- See [`docs/TRACEABILITY.md`](docs/TRACEABILITY.md) and [`docs/UNRESOLVED_RULES.md`](docs/UNRESOLVED_RULES.md) before implementing later phases.
 - Hardware-free development: `FakeFrameSource` and `FakeActionSink` are available.
