@@ -8,7 +8,7 @@ created_at: 2026-08-13T06:09:23.182270Z
 author: Forge
 confidence: 0.99
 approved_at: 2026-08-13T09:41:41.161083Z
-reviewer: Felix
+reviewer: Team
 source_refs:
   - datasets/vision-20/special-gems-level3.jpg; datasets/vision-20/special-gems-level3.json; tests/test_turn.py
 tags:

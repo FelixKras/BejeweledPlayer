@@ -8,7 +8,7 @@ created_at: 2026-08-13T03:32:27.023659Z
 author: Forge
 confidence: 0.99
 approved_at: 2026-08-13T09:41:41.074075Z
-reviewer: Felix
+reviewer: Team
 source_refs:
   - src/bejeweled_player/turn.py; tests/test_settlement.py; sessions/play-20260812T203742.274360Z/summary.json; pytest
 tags:

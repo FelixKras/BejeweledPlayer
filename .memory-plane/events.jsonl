@@ -12,11 +12,11 @@
 {"actor": "Forge", "event": "proposed", "id": "mp-20260813-4186055776", "path": ".memory-plane/proposals/multicolored-special-gem-is-named-hypercube-055776.md", "ts": "2026-08-13T06:12:33.022708Z"}
 {"actor": "Forge", "event": "proposed", "id": "mp-20260813-138febe1e0", "path": ".memory-plane/proposals/detect-hypercube-by-warm-secondary-hue-family-ratio-ebe1e0.md", "ts": "2026-08-13T06:56:43.927412Z"}
 {"actor": "Forge", "event": "proposed", "id": "mp-20260813-c0c3a010d8", "path": ".memory-plane/proposals/hypercube-ratio-threshold-validated-across-four-rotation-phases-a010d8.md", "ts": "2026-08-13T09:23:43.938080Z"}
-{"event": "approved", "id": "mp-20260812-597d49cc05", "path": ".memory-plane/artifacts/immediate-match-size-is-primary-move-rank-49cc05.md", "reviewer": "Felix", "ts": "2026-08-13T09:41:41.049121Z"}
-{"event": "approved", "id": "mp-20260813-c24d0b2ad0", "path": ".memory-plane/artifacts/require-observed-board-change-after-every-swipe-0b2ad0.md", "reviewer": "Felix", "ts": "2026-08-13T09:41:41.077806Z"}
-{"event": "approved", "id": "mp-20260813-4186055776", "path": ".memory-plane/artifacts/multicolored-special-gem-is-named-hypercube-055776.md", "reviewer": "Felix", "ts": "2026-08-13T09:41:41.105765Z"}
-{"event": "approved", "id": "mp-20260813-c0c3a010d8", "path": ".memory-plane/artifacts/hypercube-ratio-threshold-validated-across-four-rotation-phases-a010d8.md", "reviewer": "Felix", "ts": "2026-08-13T09:41:41.136709Z"}
-{"event": "approved", "id": "mp-20260813-3f1019c006", "path": ".memory-plane/artifacts/level-3-special-board-separates-identity-from-flame-effect-19c006.md", "reviewer": "Felix", "ts": "2026-08-13T09:41:41.166252Z"}
+{"event": "approved", "id": "mp-20260812-597d49cc05", "path": ".memory-plane/artifacts/immediate-match-size-is-primary-move-rank-49cc05.md", "reviewer": "Team", "ts": "2026-08-13T09:41:41.049121Z"}
+{"event": "approved", "id": "mp-20260813-c24d0b2ad0", "path": ".memory-plane/artifacts/require-observed-board-change-after-every-swipe-0b2ad0.md", "reviewer": "Team", "ts": "2026-08-13T09:41:41.077806Z"}
+{"event": "approved", "id": "mp-20260813-4186055776", "path": ".memory-plane/artifacts/multicolored-special-gem-is-named-hypercube-055776.md", "reviewer": "Team", "ts": "2026-08-13T09:41:41.105765Z"}
+{"event": "approved", "id": "mp-20260813-c0c3a010d8", "path": ".memory-plane/artifacts/hypercube-ratio-threshold-validated-across-four-rotation-phases-a010d8.md", "reviewer": "Team", "ts": "2026-08-13T09:41:41.136709Z"}
+{"event": "approved", "id": "mp-20260813-3f1019c006", "path": ".memory-plane/artifacts/level-3-special-board-separates-identity-from-flame-effect-19c006.md", "reviewer": "Team", "ts": "2026-08-13T09:41:41.166252Z"}
 {"actor": "Forge", "event": "proposed", "id": "mp-20260813-cd64be6aeb", "path": ".memory-plane/proposals/launch-unbounded-play-against-a-dynamic-adb-endpoint-be6aeb.md", "ts": "2026-08-13T17:46:42.514186Z"}
 {"actor": "Forge", "event": "proposed", "id": "mp-20260813-68fccb2562", "path": ".memory-plane/proposals/unknown-gems-use-a-conservative-color-evidence-ensemble-cb2562.md", "ts": "2026-08-13T19:25:42.312397Z"}
 {"actor": "Forge", "event": "proposed", "id": "mp-20260813-b5eea70a85", "path": ".memory-plane/proposals/stable-live-play-requires-consensus-and-latency-aware-settlement-a70a85.md", "ts": "2026-08-13T22:58:51.889331Z"}

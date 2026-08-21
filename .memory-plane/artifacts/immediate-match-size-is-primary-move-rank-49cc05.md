@@ -8,7 +8,7 @@ created_at: 2026-08-12T19:38:53.972548Z
 author: Forge
 confidence: 0.98
 approved_at: 2026-08-13T09:41:41.045425Z
-reviewer: Felix
+reviewer: Team
 source_refs:
   - src/bejeweled_player/board.py; tests/test_strategy.py; pytest tests/test_strategy.py tests/test_board.py
 tags:

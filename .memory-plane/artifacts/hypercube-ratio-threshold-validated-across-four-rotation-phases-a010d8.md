@@ -8,7 +8,7 @@ created_at: 2026-08-13T09:23:43.932500Z
 author: Forge
 confidence: 0.95
 approved_at: 2026-08-13T09:41:41.132741Z
-reviewer: Felix
+reviewer: Team
 source_refs:
   - datasets/vision-20/hypercube-phases.jpg; datasets/vision-20/special-gems-level3.jpg; src/bejeweled_player/board.py; tests/test_turn.py; pytest
 tags:
