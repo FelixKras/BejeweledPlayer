@@ -34,9 +34,7 @@ def build_parser() -> argparse.ArgumentParser:
     swipe = commands.add_parser("swipe", help="perform at most one adjacent board swipe")
     swipe.add_argument("--config", type=Path, required=True)
     swipe.add_argument("--source", nargs=2, type=int, metavar=("ROW", "COLUMN"), required=True)
-    swipe.add_argument(
-        "--destination", nargs=2, type=int, metavar=("ROW", "COLUMN"), required=True
-    )
+    swipe.add_argument("--destination", nargs=2, type=int, metavar=("ROW", "COLUMN"), required=True)
     swipe.add_argument(
         "--execute", action="store_true", help="authorize this one swipe; otherwise dry-run"
     )
@@ -45,9 +43,7 @@ def build_parser() -> argparse.ArgumentParser:
     turn.add_argument("--config", type=Path, required=True)
     turn.add_argument("--output-dir", type=Path, default=Path("sessions"))
     turn.add_argument("--settle-seconds", type=float, default=0.05)
-    turn.add_argument(
-        "--execute", action="store_true", help="authorize the selected single swipe"
-    )
+    turn.add_argument("--execute", action="store_true", help="authorize the selected single swipe")
 
     multi_turn = commands.add_parser(
         "multi-turn", help="run a bounded sequence of recorded immediate-match turns"
@@ -56,11 +52,11 @@ def build_parser() -> argparse.ArgumentParser:
     multi_turn.add_argument("--turns", type=int, required=True)
     multi_turn.add_argument("--output-dir", type=Path, default=Path("sessions"))
     multi_turn.add_argument("--settle-seconds", type=float, default=0.05)
-    multi_turn.add_argument(
-        "--execute", action="store_true", help="authorize the bounded sequence"
-    )
+    multi_turn.add_argument("--execute", action="store_true", help="authorize the bounded sequence")
 
-    play = commands.add_parser("play", help="play until stopped; one immediate-score turn at a time")
+    play = commands.add_parser(
+        "play", help="play until stopped; one immediate-score turn at a time"
+    )
     play.add_argument("--config", type=Path, required=True)
     play.add_argument("--output-dir", type=Path, default=Path("sessions"))
     play.add_argument("--settle-minimum-seconds", type=float, default=0.05)
@@ -188,8 +184,14 @@ def main() -> None:
         if args.command == "play":
             if not args.execute:
                 raise ValueError("play requires --execute authorization")
-            if args.settle_minimum_seconds < 0 or args.settle_timeout_seconds <= 0 or args.poll_seconds <= 0:
-                raise ValueError("settle minimum must be non-negative; timeout and poll must be positive")
+            if (
+                args.settle_minimum_seconds < 0
+                or args.settle_timeout_seconds <= 0
+                or args.poll_seconds <= 0
+            ):
+                raise ValueError(
+                    "settle minimum must be non-negative; timeout and poll must be positive"
+                )
             session, records = run_unbounded(
                 load_config(args.config),
                 args.output_dir,

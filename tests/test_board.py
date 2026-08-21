@@ -9,12 +9,14 @@ def test_matched_cells_detects_horizontal_and_vertical_runs():
 
 
 def test_find_best_move_creates_match():
-    board = np.array([
-        [1, 2, 1, 4],
-        [3, 1, 5, 6],
-        [2, 3, 4, 5],
-        [4, 5, 6, 2],
-    ])
+    board = np.array(
+        [
+            [1, 2, 1, 4],
+            [3, 1, 5, 6],
+            [2, 3, 4, 5],
+            [4, 5, 6, 2],
+        ]
+    )
     move = find_best_move(board)
     assert move is not None
     assert {move.start, move.end} == {(0, 1), (1, 1)}

@@ -470,19 +470,25 @@ logging: {}
 class FrameSource:
     def capture(self) -> Frame: ...
 
+
 class BoardRecognizer:
     def recognize(self, frames: Sequence[Frame]) -> BoardObservation: ...
+
 
 class GameStateDetector:
     def detect(self, observations: ObservationBundle) -> GameStateEvidence: ...
 
+
 class RuleSet:
     def legal_moves(self, board: BoardState) -> Sequence[Move]: ...
-    def simulate(self, board: BoardState, move: Move,
-                 refill: RefillProvider) -> SimulationResult: ...
+    def simulate(
+        self, board: BoardState, move: Move, refill: RefillProvider
+    ) -> SimulationResult: ...
+
 
 class Planner:
     def plan(self, context: PlanningContext) -> PlanResult: ...
+
 
 class ActionSink:
     def swipe(self, move: Move, geometry: BoardGeometry) -> ActionReceipt: ...

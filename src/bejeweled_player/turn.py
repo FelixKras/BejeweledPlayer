@@ -45,7 +45,7 @@ def progress_fraction(png: bytes, config: AppConfig) -> float:
         raise ValueError("captured frame is not a valid PNG")
     left, top, right, bottom = config.progress_region
     hsv = cv2.cvtColor(image[top:bottom, left:right], cv2.COLOR_BGR2HSV)
-    blue = ((hsv[:, :, 0] >= 85) & (hsv[:, :, 0] <= 135) & (hsv[:, :, 1] >= 60))
+    blue = (hsv[:, :, 0] >= 85) & (hsv[:, :, 0] <= 135) & (hsv[:, :, 1] >= 60)
     columns = np.count_nonzero(blue, axis=0)
     return float(np.mean(columns > max(2, (bottom - top) // 10)))
 
@@ -78,10 +78,7 @@ def continue_button(png: bytes) -> tuple[int, int] | None:
     if orange_panel_fraction < 0.20:
         return None
     green = (
-        (hsv[:, :, 0] >= 35)
-        & (hsv[:, :, 0] <= 90)
-        & (hsv[:, :, 1] >= 90)
-        & (hsv[:, :, 2] >= 45)
+        (hsv[:, :, 0] >= 35) & (hsv[:, :, 0] <= 90) & (hsv[:, :, 1] >= 90) & (hsv[:, :, 2] >= 45)
     ).astype(np.uint8) * 255
     green[: int(height * 0.55)] = 0
     contours, _ = cv2.findContours(green, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -252,9 +249,7 @@ def _capture_settled(
     transition_started = False
     board_changed = False
     unchanged_streak = 0
-    samples: deque[tuple[Frame, dict[str, object]]] = deque(
-        maxlen=_SETTLEMENT_DEBUG_FRAME_COUNT
-    )
+    samples: deque[tuple[Frame, dict[str, object]]] = deque(maxlen=_SETTLEMENT_DEBUG_FRAME_COUNT)
     while time.monotonic() < deadline:
         frame = source.capture()
         sample: dict[str, object] = {"frame_id": frame.frame_id}
@@ -369,10 +364,13 @@ def _board_changed_after_move(before: np.ndarray, current: np.ndarray) -> bool:
 def _boards_equivalent_for_noop(before: np.ndarray, current: np.ndarray) -> bool:
     if before.shape != current.shape:
         return False
-    return sum(
-        gem_color(int(before_label)) != gem_color(int(current_label))
-        for before_label, current_label in zip(before.flat, current.flat, strict=True)
-    ) <= 1
+    return (
+        sum(
+            gem_color(int(before_label)) != gem_color(int(current_label))
+            for before_label, current_label in zip(before.flat, current.flat, strict=True)
+        )
+        <= 1
+    )
 
 
 def _boards_equivalent_for_settlement(previous: np.ndarray, current: np.ndarray) -> bool:

@@ -69,9 +69,7 @@ class CellObservation:
     effect: EffectType
     identity_confidence: float
     effect_confidence: float
-    feature_summary: Mapping[str, Any] = field(
-        default_factory=lambda: MappingProxyType({})
-    )
+    feature_summary: Mapping[str, Any] = field(default_factory=lambda: MappingProxyType({}))
     frame_ids: tuple[str, ...] = ()
 
 

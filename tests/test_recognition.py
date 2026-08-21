@@ -82,7 +82,10 @@ def test_dark_overlay_white_gem_is_not_a_hypercube() -> None:
     recognized = recognize_board(image, (0, 0, 120, 120), 1, 1, 7)
     assert recognized[0, 0] != HYPERCUBE
 
-LLM_DATASET = json.loads((DATASET.parent / "vision-llm-labeled" / "consensus_dataset.json").read_text())
+
+LLM_DATASET = json.loads(
+    (DATASET.parent / "vision-llm-labeled" / "consensus_dataset.json").read_text()
+)
 
 
 KNOWN_FAILURES = {
@@ -91,6 +94,7 @@ KNOWN_FAILURES = {
     "turn-20260819T064028.310041Z",
     "turn-20260819T064059.758481Z",
 }
+
 
 @pytest.mark.parametrize("record", LLM_DATASET, ids=lambda r: r["frame_id"])
 def test_llm_consensus_board_recognition(record: dict[str, object]) -> None:
@@ -101,13 +105,13 @@ def test_llm_consensus_board_recognition(record: dict[str, object]) -> None:
     image = cv2.imread(str(image_path))
     assert image is not None
     recognized = recognize_board(image, (0, 448, 960, 1408), 8, 8, 7)
-    
+
     gemini = record["annotations"].get("google/gemini-3.7-flash")
     grok = record["annotations"].get("x-ai/grok-4.6")
-    
+
     if not gemini or not grok:
         pytest.skip("Missing annotations from one or both models")
-        
+
     mismatches = []
     for r in range(8):
         for c in range(8):
@@ -116,14 +120,20 @@ def test_llm_consensus_board_recognition(record: dict[str, object]) -> None:
             if g1 == g2 and g1 != "na":
                 expected_label = g1
                 actual_label = int(recognized[r, c])
-                
+
                 if expected_label == "hypercube":
                     if actual_label != HYPERCUBE:
-                        mismatches.append(f"r{r+1}c{c+1}: expected hypercube, got {actual_label}")
+                        mismatches.append(
+                            f"r{r + 1}c{c + 1}: expected hypercube, got {actual_label}"
+                        )
                 else:
                     expected_color = COLOR_LABELS[expected_label]
                     actual_color = gem_color(actual_label)
                     if actual_color != expected_color:
-                        mismatches.append(f"r{r+1}c{c+1}: expected {expected_label} ({expected_color}), got {actual_color} (raw {actual_label})")
-                        
-    assert not mismatches, f"Recognition failed on {len(mismatches)} cells:\n" + "\n".join(mismatches)
+                        mismatches.append(
+                            f"r{r + 1}c{c + 1}: expected {expected_label} ({expected_color}), got {actual_color} (raw {actual_label})"
+                        )
+
+    assert not mismatches, f"Recognition failed on {len(mismatches)} cells:\n" + "\n".join(
+        mismatches
+    )

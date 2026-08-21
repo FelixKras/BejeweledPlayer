@@ -30,7 +30,10 @@ class Move:
 
 
 def recognize_board(
-    image: np.ndarray, bounds: tuple[int, int, int, int], rows: int, cols: int,
+    image: np.ndarray,
+    bounds: tuple[int, int, int, int],
+    rows: int,
+    cols: int,
     colors: int,
 ) -> np.ndarray:
     if colors != 7:
@@ -47,21 +50,21 @@ def recognize_board(
             y = round((row + 0.5) * crop.shape[0] / rows)
             cell_size = min(crop.shape[0] // rows, crop.shape[1] // cols)
             radius = max(2, cell_size // 8)
-            patch = crop[max(0, y - radius):y + radius, max(0, x - radius):x + radius]
+            patch = crop[max(0, y - radius) : y + radius, max(0, x - radius) : x + radius]
             hsv = cv2.cvtColor(patch, cv2.COLOR_BGR2HSV)
             hue, saturation, _ = np.median(hsv.reshape(-1, 3), axis=0)
             # Keep special-gem color sampling inside the gem body; cell edges include
             # board artwork and animated glows that can look falsely multicolored.
             histogram_radius = max(radius, cell_size // 4)
             histogram_patch = crop[
-                max(0, y - histogram_radius):y + histogram_radius,
-                max(0, x - histogram_radius):x + histogram_radius,
+                max(0, y - histogram_radius) : y + histogram_radius,
+                max(0, x - histogram_radius) : x + histogram_radius,
             ]
             histogram_hsv = cv2.cvtColor(histogram_patch, cv2.COLOR_BGR2HSV)
             effect_radius = max(radius, cell_size // 2)
             effect_patch = crop[
-                max(0, y - effect_radius):min(crop.shape[0], y + effect_radius),
-                max(0, x - effect_radius):min(crop.shape[1], x + effect_radius),
+                max(0, y - effect_radius) : min(crop.shape[0], y + effect_radius),
+                max(0, x - effect_radius) : min(crop.shape[1], x + effect_radius),
             ]
             effect_hsv = cv2.cvtColor(effect_patch, cv2.COLOR_BGR2HSV)
             saturated_hues = histogram_hsv[:, :, 0][histogram_hsv[:, :, 1] >= 90]
@@ -92,8 +95,11 @@ def recognize_board(
                 and histogram_value < 190
             )
             flame_gem = _has_flame_effect(effect_hsv)
-            if saturation >= 70 and saturated_fraction >= 0.25 and hypercube and (
-                saturated_fraction < 0.85 or significant_hue_bins <= 2
+            if (
+                saturation >= 70
+                and saturated_fraction >= 0.25
+                and hypercube
+                and (saturated_fraction < 0.85 or significant_hue_bins <= 2)
             ):
                 label = HYPERCUBE
             elif saturation < 70:
@@ -149,9 +155,9 @@ def classify_unknown_gem(patch: np.ndarray) -> int:
         saturated = pixels[pixels[:, 1] >= 70]
         if saturated.size == 0:
             continue
-        histogram = np.histogram(
-            saturated[:, 0], bins=18, range=(0, 180), weights=saturated[:, 1]
-        )[0].astype(np.float32)
+        histogram = np.histogram(saturated[:, 0], bins=18, range=(0, 180), weights=saturated[:, 1])[
+            0
+        ].astype(np.float32)
         histogram /= max(1.0, float(np.sum(histogram)))
         for label, bins in _HUE_TEMPLATE_BINS.items():
             scores[label] += weight * float(np.sum(histogram[list(bins)]))
@@ -201,10 +207,7 @@ def _has_flame_effect(hsv: np.ndarray) -> bool:
         np.abs(yy - (height - 1) / 2) / max(1, height / 2),
     )
     orange = (
-        (hsv[:, :, 0] >= 3)
-        & (hsv[:, :, 0] <= 22)
-        & (hsv[:, :, 1] >= 130)
-        & (hsv[:, :, 2] >= 180)
+        (hsv[:, :, 0] >= 3) & (hsv[:, :, 0] <= 22) & (hsv[:, :, 1] >= 130) & (hsv[:, :, 2] >= 180)
     )
     ring = (distance > 0.50) & (distance < 0.85)
     center = distance < 0.40
@@ -228,11 +231,7 @@ def matched_cells(board: np.ndarray) -> set[Cell]:
         start = 0
         for col in range(1, cols + 1):
             start_color = gem_color(int(board[row, start]))
-            if (
-                col == cols
-                or gem_color(int(board[row, col])) != start_color
-                or start_color is None
-            ):
+            if col == cols or gem_color(int(board[row, col])) != start_color or start_color is None:
                 if col - start >= 3:
                     matches.update((row, c) for c in range(start, col))
                 start = col
@@ -240,11 +239,7 @@ def matched_cells(board: np.ndarray) -> set[Cell]:
         start = 0
         for row in range(1, rows + 1):
             start_color = gem_color(int(board[start, col]))
-            if (
-                row == rows
-                or gem_color(int(board[row, col])) != start_color
-                or start_color is None
-            ):
+            if row == rows or gem_color(int(board[row, col])) != start_color or start_color is None:
                 if row - start >= 3:
                     matches.update((r, col) for r in range(start, row))
                 start = row

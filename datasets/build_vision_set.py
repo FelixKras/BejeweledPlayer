@@ -83,14 +83,21 @@ def main() -> None:
                     1,
                 )
         tile = cv2.resize(annotated, (480, 480), interpolation=cv2.INTER_AREA)
-        cv2.putText(tile, f"Board {board_index}", (8, 24), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0), 3)
-        cv2.putText(tile, f"Board {board_index}", (8, 24), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 1)
+        cv2.putText(
+            tile, f"Board {board_index}", (8, 24), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0), 3
+        )
+        cv2.putText(
+            tile, f"Board {board_index}", (8, 24), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 1
+        )
         board_tiles.append(tile)
 
     for sheet_index in range(4):
         tiles = board_tiles[sheet_index * 5 : (sheet_index + 1) * 5]
         sheet = np.hstack(tiles)
-        cv2.imwrite(str(sheets_dir / f"boards-{sheet_index * 5 + 1:02d}-{sheet_index * 5 + 5:02d}.png"), sheet)
+        cv2.imwrite(
+            str(sheets_dir / f"boards-{sheet_index * 5 + 1:02d}-{sheet_index * 5 + 5:02d}.png"),
+            sheet,
+        )
 
     (OUTPUT / "labels.json").write_text(json.dumps(records, indent=2) + "\n")
     (OUTPUT / "sources.json").write_text(json.dumps(SOURCES, indent=2) + "\n")

@@ -78,9 +78,7 @@ def test_recognizer_classifies_ordinary_gem_variants(
         pytest.param(150, 60, 235, id="purple-tint"),
     ],
 )
-def test_recognizer_classifies_white_gem_variants(
-    hue: int, saturation: int, value: int
-) -> None:
+def test_recognizer_classifies_white_gem_variants(hue: int, saturation: int, value: int) -> None:
     image = _solid_hsv(hue, saturation, value)
     recognized = recognize_board(image, (0, 0, 120, 120), 1, 1, 7)
     assert recognized[0, 0] == 6
@@ -95,9 +93,7 @@ def test_recognizer_classifies_white_gem_variants(
         pytest.param(66, 90, id="purple-right"),
     ],
 )
-def test_recognizer_classifies_hypercube_variants(
-    purple_start: int, purple_end: int
-) -> None:
+def test_recognizer_classifies_hypercube_variants(purple_start: int, purple_end: int) -> None:
     image = _solid_hsv(20, 220, 220)
     image[:, purple_start:purple_end] = _solid_hsv(150, 220, 220)[:, : purple_end - purple_start]
     recognized = recognize_board(image, (0, 0, 120, 120), 1, 1, 7)
@@ -133,9 +129,9 @@ def test_recognizer_and_immediate_decision_on_synthetic_board() -> None:
     image = np.zeros((400, 400, 3), dtype=np.uint8)
     for row in range(4):
         for column in range(4):
-            image[row * 100 : (row + 1) * 100, column * 100 : (column + 1) * 100] = (
-                COLORS[int(values[row, column])]
-            )
+            image[row * 100 : (row + 1) * 100, column * 100 : (column + 1) * 100] = COLORS[
+                int(values[row, column])
+            ]
     recognized = recognize_board(image, (0, 0, 400, 400), 4, 4, 7)
     assert np.array_equal(recognized, values)
     move = find_best_move(recognized)
@@ -234,9 +230,9 @@ def test_turn_allows_in_game_board_with_existing_symbolic_match() -> None:
     image = np.zeros((400, 400, 3), dtype=np.uint8)
     for row in range(4):
         for column in range(4):
-            image[row * 100 : (row + 1) * 100, column * 100 : (column + 1) * 100] = (
-                COLORS[int(values[row, column])]
-            )
+            image[row * 100 : (row + 1) * 100, column * 100 : (column + 1) * 100] = COLORS[
+                int(values[row, column])
+            ]
     success, png = cv2.imencode(".png", image)
     assert success
     config = AppConfig(
@@ -267,9 +263,9 @@ def test_settlement_recognition_can_preserve_one_unknown_cell(
     image = np.zeros((800, 800, 3), dtype=np.uint8)
     for row in range(8):
         for column in range(8):
-            image[row * 100 : (row + 1) * 100, column * 100 : (column + 1) * 100] = (
-                COLORS[int(values[row, column])]
-            )
+            image[row * 100 : (row + 1) * 100, column * 100 : (column + 1) * 100] = COLORS[
+                int(values[row, column])
+            ]
     success, png = cv2.imencode(".png", image)
     assert success
     config = AppConfig(

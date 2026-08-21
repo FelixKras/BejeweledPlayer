@@ -64,9 +64,7 @@ def load_config(path: Path) -> AppConfig:
 
     device = _section(data, "device", {"serial"})
     capture = _section(data, "capture", {"width", "height", "timeout_seconds", "retries"})
-    geometry = _section(
-        data, "geometry", {"rows", "columns", "left", "top", "right", "bottom"}
-    )
+    geometry = _section(data, "geometry", {"rows", "columns", "left", "top", "right", "bottom"})
     recognition = _section(data, "recognition", {"profile"})
     rules = _section(data, "rules", {"rule_set"})
     planner = _section(data, "planner", {"random_seed", "budget_seconds"})
@@ -139,12 +137,18 @@ def _validate(config: AppConfig) -> None:
     if config.frame_retention not in {"all", "decision", "errors", "none"}:
         raise ValueError("frame_retention must be all, decision, errors, or none")
     left, top, right, bottom = config.progress_region
-    if not (0 <= left < right <= config.screenshot_width and 0 <= top < bottom <= config.screenshot_height):
+    if not (
+        0 <= left < right <= config.screenshot_width
+        and 0 <= top < bottom <= config.screenshot_height
+    ):
         raise ValueError("progress region is outside the screenshot")
     if not 0 < config.progress_full_threshold <= 1:
         raise ValueError("progress_full_threshold must be between 0 and 1")
     left, top, right, bottom = config.foreground_region
-    if not (0 <= left < right <= config.screenshot_width and 0 <= top < bottom <= config.screenshot_height):
+    if not (
+        0 <= left < right <= config.screenshot_width
+        and 0 <= top < bottom <= config.screenshot_height
+    ):
         raise ValueError("foreground region is outside the screenshot")
     if not 0 <= config.foreground_change_threshold <= 1:
         raise ValueError("foreground change threshold must be between 0 and 1")

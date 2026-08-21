@@ -1,7 +1,7 @@
 schema_version = 1
 
 [device]
-serial = "192.168.41.98:40125"
+serial = "192.168.41.98:33839"
 
 [capture]
 width = 960
